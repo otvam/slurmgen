@@ -4,7 +4,6 @@ The job name is giving as an input argument.
 """
 
 import sys
-import json
 import os.path
 import subprocess
 
@@ -46,6 +45,8 @@ def _write_summary(fid, tag, filename_log, filename_slurm):
     fid.write('echo "TAG          : %s"\n' % tag)
     fid.write('echo "LOG FILE     : %s"\n' % filename_log)
     fid.write('echo "SLURM FILE   : %s"\n' % filename_slurm)
+    fid.write('echo "HOSTNAME : `hostname`"')
+    fid.write('echo "DATE : `date`"')
     fid.write('\n')
 
     # write slurm
@@ -155,16 +156,13 @@ def run_data(tag, control, env, job):
     sbatch = control["sbatch"]
     folder = control["folder"]
 
-    # create the folders
-    if not os.path.isdir(folder):
-        os.makedirs(folder)
-
     # get filenames
     filename_slurm = os.path.join(folder, tag + ".slm")
     filename_log = os.path.join(folder, tag + ".log")
 
     # remove old files
     if overwrite:
+        print("info: remove existing files")
         try:
             os.remove(filename_slurm)
         except FileNotFoundError:
@@ -175,18 +173,23 @@ def run_data(tag, control, env, job):
             pass
 
     # check output files
+    print("info: check files")
     if os.path.isfile(filename_slurm):
         print("error: slurm file already exists", file=sys.stderr)
         return False
     if os.path.isfile(filename_log):
         print("error: log file already exists", file=sys.stderr)
         return False
+    if not os.path.isdir(folder):
+        os.makedirs(folder)
 
     # create the slurm file
+    print("info: generate Slurm file")
     _generate_file(tag, filename_slurm, filename_log, env, job)
 
     # submit the job
     if sbatch:
+        print("info: submit Slurm job")
         try:
             subprocess.run(["sbatch", filename_slurm], check=True)
         except OSError:

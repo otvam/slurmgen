@@ -12,6 +12,20 @@
 set -o nounset
 set -o pipefail
 
+function clean_data {
+  echo "======================================================================"
+  echo "CLEAN DATA"
+  echo "======================================================================"
+
+  # clean package
+  rm -rf dist
+  rm -rf build
+  rm -rf pyslurmconda.egg-info
+
+  # clean version file
+  rm -rf version.txt
+}
+
 function create_tag {
   echo "======================================================================"
   echo "Create tag"
@@ -33,36 +47,13 @@ function create_release {
   gh release create $VER --title $VER --notes "$MSG"
 }
 
-function upload_documentation {
-  echo "======================================================================"
-  echo "Upload documentation"
-  echo "======================================================================"
-
-  # init clean data
-  rm -rf pypeecdocs/*
-
-  # copy website
-  cp -r html/* pypeecdocs
-
-  # copy metadata
-  cp docs/website/CNAME pypeecdocs
-  cp docs/website/README.md pypeecdocs
-  cp docs/website/googlec2be449c43987dd0.html pypeecdocs
-
-  # add file in git
-  git -C pypeecdocs add .
-
-  # commit the new version
-  git -C pypeecdocs commit -m "$VER / $MSG"
-
-  # push the new version
-  git -C pypeecdocs push
-}
-
 function upload_package {
   echo "======================================================================"
   echo "Upload package"
   echo "======================================================================"
+
+  # create package
+  python -m build
 
   # upload to PyPi
   twine upload dist/*
@@ -78,10 +69,9 @@ else
 fi
 
 # run the code
+clean_data
 create_tag
 create_release
-./run_build.sh
-upload_documentation
 upload_package
 
 exit 0
