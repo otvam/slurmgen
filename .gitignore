@@ -7,5 +7,14 @@
 *.pyo
 **/__pycache__
 
-# exclude the PyCharm project
+# exclude packinging files
+dist/*
+build/*
+pyslurmconda.egg-info/*
+
+# exclude version file
+pyslurmconda/version.txt
+
+# exclude the project files
 .idea/*
+.venv/*
