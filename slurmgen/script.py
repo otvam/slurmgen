@@ -29,7 +29,7 @@ def _get_parser():
 
     # create the parser
     parser = argparse.ArgumentParser(
-        prog="slurmgen",
+        prog="sgen",
         description="SlurmGen - Simple Slurm Manager",
         epilog="Thomas Guillod - Dartmouth College",
         allow_abbrev=False,
