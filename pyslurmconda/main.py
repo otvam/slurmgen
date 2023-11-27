@@ -115,7 +115,7 @@ def _write_command(fid, command):
     fid.write('\n')
 
 
-def _generate_file(tag, filename_input, filename_slurm, filename_log, env, job):
+def _generate_file(tag, filename_slurm, filename_log, env, job):
     # extract env
     var = env["var"]
     folder_delete = env["folder_delete"]
@@ -149,30 +149,19 @@ def _generate_file(tag, filename_input, filename_slurm, filename_log, env, job):
         fid.write('exit 0\n')
 
 
-def run_data(folder_in, folder_out, tag):
+def run_data(tag, control, env, job):
+    # extract
+    overwrite = control["overwrite"]
+    sbatch = control["sbatch"]
+    folder = control["folder"]
+
     # create the folders
-    if not os.path.isdir(folder_in):
-        os.makedirs(folder_in)
-    if not os.path.isdir(folder_out):
-        os.makedirs(folder_out)
+    if not os.path.isdir(folder):
+        os.makedirs(folder)
 
     # get filenames
-    filename_input = os.path.join(folder_in, tag + ".json")
-    filename_slurm = os.path.join(folder_out, tag + ".slm")
-    filename_log = os.path.join(folder_out, tag + ".log")
-
-    # check input file
-    if not os.path.isfile(filename_input):
-        print("error: input file not found")
-        return 1
-
-    # load the data
-    with open(filename_input, "r") as fid:
-        data = json.load(fid)
-        overwrite = data["overwrite"]
-        sbatch = data["sbatch"]
-        env = data["env"]
-        job = data["job"]
+    filename_slurm = os.path.join(folder, tag + ".slm")
+    filename_log = os.path.join(folder, tag + ".log")
 
     # remove old files
     if overwrite:
@@ -187,42 +176,21 @@ def run_data(folder_in, folder_out, tag):
 
     # check output files
     if os.path.isfile(filename_slurm):
-        print("error: slurm file already exists")
-        return 2
+        print("error: slurm file already exists", file=sys.stderr)
+        return False
     if os.path.isfile(filename_log):
-        print("error: log file already exists")
-        return 2
+        print("error: log file already exists", file=sys.stderr)
+        return False
 
     # create the slurm file
-    _generate_file(tag, filename_input, filename_slurm, filename_log, env, job)
+    _generate_file(tag, filename_slurm, filename_log, env, job)
 
     # submit the job
     if sbatch:
         try:
             subprocess.run(["sbatch", filename_slurm], check=True)
         except OSError:
-            print("error: sbatch error")
-            return 3
+            print("error: sbatch error", file=sys.stderr)
+            return False
 
-
-def run_script():
-    # get arguments
-    if len(sys.argv) == 2:
-        tag = sys.argv[1]
-    else:
-        print("error: invalid arguments")
-        sys.exit(1)
-
-    # define folders
-    folder_in = "slurm_input"
-    folder_out = "slurm_output"
-
-    # create the folders
-    status = run_data(folder_in, folder_out, tag)
-
-    # return
-    sys.exit(status)
-
-
-if __name__ == "__main__":
-    run_script()
+    return False

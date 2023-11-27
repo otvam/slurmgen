@@ -1,17 +1,20 @@
 {
-    "overwrite": true,
-    "sbatch": true,
+    "tag": "test",
+    "control": {
+        "overwrite": true,
+        "sbatch": true,
+        "folder": "slurm_output"
+    },
     "env": {
-        "folder_delete": [],
+        "folder_delete": ["data_input", "data_output"],
         "folder_create": ["data_input", "data_output"],
         "var": {
-            "PYPEEC": "config/config_hpc.yaml",
             "PYTHONUNBUFFERED": "1",
             "CONFIGHPC": "1"
         },
         "conda": {
-            "path": "/optnfs/common/miniconda3/etc/profile.d/conda.sh",
-            "name": "pypeec"
+            "path": "conda.sh",
+            "name": "envname"
         }
     },
     "job": {
@@ -25,7 +28,7 @@
         "command": {
             "exe": "python",
             "script": "run_solve.py",
-            "arg_list": []
+            "arg_list": ["arg_1", "arg_2"]
         }
     }
 }

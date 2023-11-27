@@ -30,25 +30,28 @@ echo "JOB NODE     : $SLURM_JOB_NODELIST"
 
 ####################################### environment
 
+echo "==================== FOLDER DELETE"
+rm -rf "data_input"
+rm -rf "data_output"
+
 echo "==================== FOLDER CREATE"
 mkdir -p "data_input"
 mkdir -p "data_output"
 
 echo "==================== ENV VAR"
-export PYPEEC="config/config_hpc.yaml"
 export PYTHONUNBUFFERED="1"
 export CONFIGHPC="1"
 
 echo "==================== CONDA LOAD"
-source "/optnfs/common/miniconda3/etc/profile.d/conda.sh"
+source "conda.sh"
 
 echo "==================== CONDA ACTIVATE"
-conda activate "pypeec"
+conda activate "envname"
 
 ####################################### run
 
 echo "==================== RUN"
-python run_solve.py
+python run_solve.py "arg_1" "arg_2"
 
 ####################################### end
 
