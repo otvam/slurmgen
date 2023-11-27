@@ -1,0 +1,2 @@
+ARGUMENT = hello world!
+VARWORLD = welcome!

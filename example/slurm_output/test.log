@@ -1,0 +1,26 @@
+================================= SLURM START
+==================== PARAM
+TAG          : test
+LOG FILE     : slurm_output/test.log
+SLURM FILE   : slurm_output/test.slm
+==================== INFO
+HOSTNAME     : m08.hpcc.dartmouth.edu
+DATE         : Mon Nov 27 14:39:24 EST 2023
+==================== SLURM
+JOB ID       : 8564504
+JOB NAME     : test
+JOB NODE     : m08
+==================== FOLDER DELETE
+==================== FOLDER CREATE
+==================== ENV VAR
+==================== RUN: hello
+enter script
+    ARGUMENT = hello world!
+    VARWORLD = welcome!
+exit script
+==================== RUN: goodbye
+enter script
+    ARGUMENT = goodbye world!
+    VARWORLD = welcome!
+exit script
+======================================== SLURM END

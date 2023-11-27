@@ -1,0 +1,43 @@
+#!/bin/bash
+
+#SBATCH --job-name="test"
+#SBATCH --output="slurm_output/test.log"
+#SBATCH --time="4:00:00"
+#SBATCH --nodes="1"
+#SBATCH --ntasks-per-node="2"
+#SBATCH --mem="8G"
+
+echo "================================= SLURM START"
+
+echo "==================== PARAM"
+echo "TAG          : test"
+echo "LOG FILE     : slurm_output/test.log"
+echo "SLURM FILE   : slurm_output/test.slm"
+
+echo "==================== INFO"
+echo "HOSTNAME     : `hostname`"
+echo "DATE         : `date`"
+
+echo "==================== SLURM"
+echo "JOB ID       : $SLURM_JOB_ID"
+echo "JOB NAME     : $SLURM_JOB_NAME"
+echo "JOB NODE     : $SLURM_JOB_NODELIST"
+
+echo "==================== FOLDER DELETE"
+rm -rf "data_output"
+
+echo "==================== FOLDER CREATE"
+mkdir -p "data_output"
+
+echo "==================== ENV VAR"
+export PYTHONUNBUFFERED="1"
+export VARWORLD="welcome!"
+
+echo "==================== RUN: hello"
+python3 "run_slurm.py" "hello" "hello world!"
+
+echo "==================== RUN: goodbye"
+python3 "run_slurm.py" "goodbye" "goodbye world!"
+
+echo "======================================== SLURM END"
+exit 0
