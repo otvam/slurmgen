@@ -8,45 +8,38 @@ import os.path
 import subprocess
 
 
-def _write_header(fid, tag, filename_log, resources):
-    fid.write('#!/bin/bash\n')
-    fid.write('\n')
+def _write_header(fid, tag, filename_log, pragmas):
+    # check pragmas
+    if "job-name" in pragmas:
+        print("error: job name is already set by the script", file=sys.stderr)
+        sys.exit(1)
+    if "output" in pragmas:
+        print("error: job log is already set by the script", file=sys.stderr)
+        sys.exit(1)
+    if "error" in pragmas:
+        print("error: job log is already set by the script", file=sys.stderr)
+        sys.exit(1)
 
     # write job name
-    fid.write('####################################### sbatch name\n')
-    fid.write('\n')
     fid.write('#SBATCH --job-name="%s"\n' % tag)
     fid.write('#SBATCH --output="%s"\n' % filename_log)
-    fid.write('\n')
-
-    # write job ressources
-    cmd = {
-        "time": "time",
-        "nb_nodes": "nodes",
-        "nb_tasks": "ntasks-per-node",
-        "list_nodes": "nodelist",
-        "memory": "mem",
-    }
-    fid.write('####################################### sbatch resources\n')
-    fid.write('\n')
-    for tag, cmd in cmd.items():
-        val = resources[tag]
-        if val is not None:
-            fid.write('#SBATCH --%s="%s"\n' % (cmd, val))
+    for tag, val in pragmas.items():
+        fid.write('#SBATCH --%s="%s"\n' % (tag, val))
     fid.write('\n')
 
 
 def _write_summary(fid, tag, filename_log, filename_slurm):
-    fid.write('####################################### summary\n')
-    fid.write('\n')
-
     # write param
     fid.write('echo "==================== PARAM"\n')
     fid.write('echo "TAG          : %s"\n' % tag)
     fid.write('echo "LOG FILE     : %s"\n' % filename_log)
     fid.write('echo "SLURM FILE   : %s"\n' % filename_slurm)
-    fid.write('echo "HOSTNAME : `hostname`"')
-    fid.write('echo "DATE : `date`"')
+    fid.write('\n')
+
+    # write info
+    fid.write('echo "==================== INFO"\n')
+    fid.write('echo "HOSTNAME : `hostname`"\n')
+    fid.write('echo "DATE : `date`"\n')
     fid.write('\n')
 
     # write slurm
@@ -58,9 +51,6 @@ def _write_summary(fid, tag, filename_log, filename_slurm):
 
 
 def _write_environment(fid, folder_delete, folder_create, var, conda):
-    fid.write('####################################### environment\n')
-    fid.write('\n')
-
     # remove folder
     if folder_delete:
         fid.write('echo "==================== FOLDER DELETE"\n')
@@ -96,23 +86,21 @@ def _write_environment(fid, folder_delete, folder_create, var, conda):
 
 def _write_command(fid, command):
     # extract data
-    exe = command["exe"]
-    script = command["script"]
-    arg_list = command["arg_list"]
+    tag = command["tag"]
+    executable = command["executable"]
+    arguments = command["arguments"]
 
     # write command
-    fid.write('####################################### run\n')
-    fid.write('\n')
-    fid.write('echo "==================== RUN"\n')
-    if arg_list:
+    fid.write('echo "==================== RUN: %s"\n' % tag)
+    if arguments:
         # parse arguments
-        arg_all = ['"' + arg + '"' for arg in arg_list]
+        arg_all = ['"' + tmp + '"' for tmp in arguments]
         arg_all = " ".join(arg_all)
 
         # write command
-        fid.write('%s %s %s\n' % (exe, script, arg_all))
+        fid.write('%s %s\n' % (executable, arg_all))
     else:
-        fid.write('%s %s\n' % (exe, script))
+        fid.write('%s\n' % executable)
     fid.write('\n')
 
 
@@ -124,28 +112,33 @@ def _generate_file(tag, filename_slurm, filename_log, env, job):
     conda = env["conda"]
 
     # extract job
-    resources = job["resources"]
-    command = job["command"]
+    pragmas = job["pragmas"]
+    commands = job["commands"]
 
     # write the data
     with open(filename_slurm, "w") as fid:
-        # write pragma
-        _write_header(fid, tag, filename_log, resources)
-
-        # write script
-        fid.write('####################################### start\n')
+        # write shebang
+        fid.write('#!/bin/bash\n')
         fid.write('\n')
+
+        # write pragma
+        _write_header(fid, tag, filename_log, pragmas)
+
+        # write script header
         fid.write('echo "================================= SLURM START"\n')
         fid.write('\n')
 
-        # write payload
+        # write summary
         _write_summary(fid, tag, filename_log, filename_slurm)
-        _write_environment(fid, folder_delete, folder_create, var, conda)
-        _write_command(fid, command)
 
-        # end script
-        fid.write('####################################### end\n')
-        fid.write('\n')
+        # write environment
+        _write_environment(fid, folder_delete, folder_create, var, conda)
+
+        # write the commands
+        for tmp in commands:
+            _write_command(fid, tmp)
+
+        # end script footer
         fid.write('echo "======================================== SLURM END"\n')
         fid.write('exit 0\n')
 
@@ -176,10 +169,10 @@ def run_data(tag, control, env, job):
     print("info: check files")
     if os.path.isfile(filename_slurm):
         print("error: slurm file already exists", file=sys.stderr)
-        return False
+        sys.exit(1)
     if os.path.isfile(filename_log):
         print("error: log file already exists", file=sys.stderr)
-        return False
+        sys.exit(1)
     if not os.path.isdir(folder):
         os.makedirs(folder)
 
@@ -194,6 +187,4 @@ def run_data(tag, control, env, job):
             subprocess.run(["sbatch", filename_slurm], check=True)
         except OSError:
             print("error: sbatch error", file=sys.stderr)
-            return False
-
-    return False
+            sys.exit(1)

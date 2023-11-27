@@ -1,34 +1,27 @@
 #!/bin/bash
 
-####################################### sbatch name
-
 #SBATCH --job-name="test"
 #SBATCH --output="slurm_output/test.log"
-
-####################################### sbatch resources
-
 #SBATCH --time="23:00:00"
 #SBATCH --nodes="1"
 #SBATCH --ntasks-per-node="16"
 #SBATCH --mem="64G"
 
-####################################### start
-
 echo "================================= SLURM START"
-
-####################################### summary
 
 echo "==================== PARAM"
 echo "TAG          : test"
 echo "LOG FILE     : slurm_output/test.log"
 echo "SLURM FILE   : slurm_output/test.slm"
 
+echo "==================== INFO"
+echo "HOSTNAME : `hostname`"
+echo "DATE : `date`"
+
 echo "==================== SLURM"
 echo "JOB ID       : $SLURM_JOB_ID"
 echo "JOB NAME     : $SLURM_JOB_NAME"
 echo "JOB NODE     : $SLURM_JOB_NODELIST"
-
-####################################### environment
 
 echo "==================== FOLDER DELETE"
 rm -rf "data_input"
@@ -48,12 +41,11 @@ source "conda.sh"
 echo "==================== CONDA ACTIVATE"
 conda activate "envname"
 
-####################################### run
+echo "==================== RUN: python"
+python "run_solve.py" "arg_1" "arg_2"
 
-echo "==================== RUN"
-python run_solve.py "arg_1" "arg_2"
-
-####################################### end
+echo "==================== RUN: perl"
+perl "run_solve.pl" "arg_1" "arg_2"
 
 echo "======================================== SLURM END"
 exit 0

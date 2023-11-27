@@ -10,10 +10,10 @@
 # exclude packinging files
 dist/*
 build/*
-pyslurmconda.egg-info/*
+slurmgen.egg-info/*
 
 # exclude version file
-pyslurmconda/version.txt
+slurmgen/version.txt
 
 # exclude the project files
 .idea/*

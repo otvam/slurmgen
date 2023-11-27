@@ -18,17 +18,23 @@
         }
     },
     "job": {
-        "resources": {
+        "pragmas": {
             "time":  "23:00:00",
-            "nb_nodes":  "1",
-            "nb_tasks": "16",
-            "memory":  "64G",
-            "list_nodes":  null
+            "nodes":  "1",
+            "ntasks-per-node": "16",
+            "mem":  "64G"
         },
-        "command": {
-            "exe": "python",
-            "script": "run_solve.py",
-            "arg_list": ["arg_1", "arg_2"]
-        }
+        "commands": [
+            {
+                "tag": "python",
+                "executable": "python",
+                "arguments": ["run_solve.py", "arg_1", "arg_2"]
+            },
+            {
+                "tag": "perl",
+                "executable": "perl",
+                "arguments": ["run_solve.pl", "arg_1", "arg_2"]
+            }
+        ]
     }
 }

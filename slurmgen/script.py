@@ -8,7 +8,7 @@ import sys
 import json
 import argparse
 import importlib.resources
-from pyslurmconda import main
+from slurmgen import main
 
 
 def _get_version():
@@ -22,7 +22,7 @@ def _get_version():
     """
 
     try:
-        with importlib.resources.open_text("pyslurmconda", "version.txt") as file_version:
+        with importlib.resources.open_text("slurmgen", "version.txt") as file_version:
             version = file_version.read()
     except FileNotFoundError:
         version = 'x.x.x'
@@ -37,8 +37,8 @@ def _get_parser():
 
     # get the parser
     parser = argparse.ArgumentParser(
-        prog="pyslurmconda",
-        description="PySlurmConda - Simple Slurm Manager",
+        prog="slurmgen",
+        description="SlurmGen - Simple Slurm Manager",
         epilog="Thomas Guillod - Dartmouth College",
         allow_abbrev=False,
     )
@@ -50,7 +50,7 @@ def _get_parser():
     parser.add_argument(
         "-v", "--version",
         action="version",
-        version="PySlurmConda %s" % version,
+        version="SlurmGen %s" % version,
     )
 
     # add subparsers
@@ -84,10 +84,10 @@ def run_script():
         job = data["job"]
 
     # create the Slurm data
-    status = main.run_data(tag, control, env, job)
+    main.run_data(tag, control, env, job)
 
     # return
-    sys.exit(int(not status))
+    sys.exit(0)
 
 
 if __name__ == "__main__":

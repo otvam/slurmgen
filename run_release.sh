@@ -20,7 +20,7 @@ function clean_data {
   # clean package
   rm -rf dist
   rm -rf build
-  rm -rf pyslurmconda.egg-info
+  rm -rf slurmgen.egg-info
 
   # clean version file
   rm -rf version.txt
