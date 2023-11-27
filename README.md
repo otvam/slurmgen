@@ -34,7 +34,7 @@ An example is located in the `example` folder of the repository:
 #   - Create a Slurm script "slurm_output/test.slm"
 #   - Put the log file in "slurm_output/test.log"
 #   - Run the Slurm script on the cluster
-slurmgen test.json
+sgen test.json
 ```
 
 ## Project Links
