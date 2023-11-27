@@ -1,3 +1,15 @@
+"""
+Simple script with a dummy payload for the examples.
+    - Read the command line arguments.
+    - Read an environment variable.
+    - Display the variable content to the console.
+    - Write the variable content in a file.
+"""
+
+__author__ = "Thomas Guillod"
+__copyright__ = "Thomas Guillod - Dartmouth College"
+__license__ = "BSD License"
+
 import os
 import sys
 
@@ -14,13 +26,13 @@ if __name__ == "__main__":
         print("error: invalid arguments")
         sys.exit(1)
 
-    # print arguments and env car
+    # print the variable content
     print("enter script")
     print("    ARGUMENT = %s" % ARGUMENT)
     print("    VARWORLD = %s" % VARWORLD)
     print("exit script")
 
-    # create file
+    # create file with the variable content
     with open(os.path.join("data_output", FILENAME + ".txt"), "w") as fid:
         fid.write("ARGUMENT = %s\n" % ARGUMENT)
         fid.write("VARWORLD = %s\n" % VARWORLD)

@@ -1,7 +1,14 @@
 """
-User script for creating slurm jobs.
-The job name is giving as an input argument.
+User script for creating Slurm script from JSON files.
+    - Read the JSON file.
+    - Create the Slurm script.
+    - Run the Slurm script (optional).
 """
+
+__author__ = "Thomas Guillod"
+__copyright__ = "Thomas Guillod - Dartmouth College"
+__license__ = "BSD License"
+
 
 import os
 import sys
@@ -13,9 +20,14 @@ from slurmgen import main
 def _get_parser():
     """
     Create a command line parser with a description.
+
+    Returns
+    -------
+    parser : object
+        Command line argument parser object.
     """
 
-    # get the parser
+    # create the parser
     parser = argparse.ArgumentParser(
         prog="slurmgen",
         description="SlurmGen - Simple Slurm Manager",
@@ -23,7 +35,7 @@ def _get_parser():
         allow_abbrev=False,
     )
 
-    # add subparsers
+    # add the argument
     parser.add_argument(
         "file",
         help="JSON file with the input data",
@@ -34,13 +46,18 @@ def _get_parser():
 
 
 def run_script():
-    # get parser
+    """
+    Entry point for the command line script.
+    Accept a single argument with the path of the JSON file.
+    """
+
+    # get argument parser
     parser = _get_parser()
 
-    # parse the config and get arguments
+    # parse the arguments
     args = parser.parse_args()
 
-    # check input file
+    # check that the JSON file exists
     if not os.path.isfile(args.file):
         print('error: input file not found', file=sys.stderr)
         sys.exit(1)
@@ -53,7 +70,7 @@ def run_script():
         env = data["env"]
         job = data["job"]
 
-    # create the Slurm data
+    # create the Slurm script
     main.run_data(tag, control, env, job)
 
     # return
