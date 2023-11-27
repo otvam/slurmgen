@@ -5,21 +5,29 @@
 
 ## Summary
 
-*SlurmGen* is a very simple *Slurm* job manager:
+**SlurmGen** is a very **simple** **Slurm** manager:
 * The job description is stored in a JSON file.
-* The JSON file is transformed into a Slurm file.
-* The Slurm file is submitted to the scheduler.
+* The JSON file is transformed into a Slurm script.
+* The Slurm file is submitted to the cluster.
 
-*SlurmGen* is only supporting a small *subset* of *Slurm*:
+**SlurmGen** is only supporting a small **subset** of **Slurm**:
 * Create and delete folders.
 * Set environment variables.
 * Set the job name and log.
-* Init a Conda environment.
-* Set the ressources (memory, time, CPU).
+* Set the ressources (memory, time, CPU, etc.).
 * Define the set of commands to be executed.
 
+SlurmGen is not a binding and/or a wrapper for Slurm.
+SlurmGen is only generating Slurm scripts from JSON files.
+
+## Example
+
 ```bash
-slurmgen slurm_input/test.json
+# Running this command will:
+#   - Create a Slurm script "slurm_output/test.slm"
+#   - Put the log file in "slurm_output/test.log"
+#   - Run the Slurm script on the cluster
+slurmgen test.json
 ```
 
 ## Project Links

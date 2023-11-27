@@ -50,7 +50,7 @@ def _write_summary(fid, tag, filename_log, filename_slurm):
     fid.write('\n')
 
 
-def _write_environment(fid, folder_delete, folder_create, var, conda):
+def _write_environment(fid, folder_delete, folder_create, var):
     # remove folder
     if folder_delete:
         fid.write('echo "==================== FOLDER DELETE"\n')
@@ -70,17 +70,6 @@ def _write_environment(fid, folder_delete, folder_create, var, conda):
         fid.write('echo "==================== ENV VAR"\n')
         for var, value in var.items():
             fid.write('export %s="%s"\n' % (var, value))
-        fid.write('\n')
-
-    # write conda load
-    if conda is not None:
-        fid.write('echo "==================== CONDA LOAD"\n')
-        fid.write('source "%s"\n' % conda["path"])
-        fid.write('\n')
-
-        # write conda activate
-        fid.write('echo "==================== CONDA ACTIVATE"\n')
-        fid.write('conda activate "%s"\n' % conda["name"])
         fid.write('\n')
 
 
@@ -109,7 +98,6 @@ def _generate_file(tag, filename_slurm, filename_log, env, job):
     var = env["var"]
     folder_delete = env["folder_delete"]
     folder_create = env["folder_create"]
-    conda = env["conda"]
 
     # extract job
     pragmas = job["pragmas"]
@@ -132,7 +120,7 @@ def _generate_file(tag, filename_slurm, filename_log, env, job):
         _write_summary(fid, tag, filename_log, filename_slurm)
 
         # write environment
-        _write_environment(fid, folder_delete, folder_create, var, conda)
+        _write_environment(fid, folder_delete, folder_create, var)
 
         # write the commands
         for tmp in commands:
