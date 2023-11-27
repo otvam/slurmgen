@@ -21,8 +21,8 @@ if __name__ == "__main__":
     print("exit script")
 
     # create file
-    with open(os.path.join("data_output", FILENAME, ".txt"), "w") as fid:
-        fid.write("    ARGUMENT = %s\n" % ARGUMENT)
-        fid.write("    VARWORLD = %s\n" % VARWORLD)
+    with open(os.path.join("data_output", FILENAME + ".txt"), "w") as fid:
+        fid.write("ARGUMENT = %s\n" % ARGUMENT)
+        fid.write("VARWORLD = %s\n" % VARWORLD)
 
     sys.exit(0)

@@ -38,8 +38,8 @@ def _write_summary(fid, tag, filename_log, filename_slurm):
 
     # write info
     fid.write('echo "==================== INFO"\n')
-    fid.write('echo "HOSTNAME : `hostname`"\n')
-    fid.write('echo "DATE : `date`"\n')
+    fid.write('echo "HOSTNAME     : `hostname`"\n')
+    fid.write('echo "DATE         : `date`"\n')
     fid.write('\n')
 
     # write slurm

@@ -10,7 +10,7 @@
         "folder_create": ["data_output"],
         "var": {
             "PYTHONUNBUFFERED": "1",
-            "VARWORLD": "1"
+            "VARWORLD": "welcome!"
         }
     },
     "job": {

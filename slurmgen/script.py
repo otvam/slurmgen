@@ -7,27 +7,7 @@ import os
 import sys
 import json
 import argparse
-import importlib.resources
 from slurmgen import main
-
-
-def _get_version():
-    """
-    Get the version.
-
-    Returns
-    -------
-    version : string
-        String with the version.
-    """
-
-    try:
-        with importlib.resources.open_text("slurmgen", "version.txt") as file_version:
-            version = file_version.read()
-    except FileNotFoundError:
-        version = 'x.x.x'
-
-    return version
 
 
 def _get_parser():
@@ -41,16 +21,6 @@ def _get_parser():
         description="SlurmGen - Simple Slurm Manager",
         epilog="Thomas Guillod - Dartmouth College",
         allow_abbrev=False,
-    )
-
-    # get version
-    version = _get_version()
-
-    # display the version
-    parser.add_argument(
-        "-v", "--version",
-        action="version",
-        version="SlurmGen %s" % version,
     )
 
     # add subparsers
