@@ -1,0 +1,11 @@
+# List of files to ignore for Git.
+#
+# Thomas Guillod - Dartmouth College
+
+# remove Python object
+*.pyc
+*.pyo
+**/__pycache__
+
+# exclude the PyCharm project
+.idea/*

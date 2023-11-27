@@ -1,0 +1,31 @@
+{
+    "overwrite": true,
+    "sbatch": true,
+    "env": {
+        "folder_delete": [],
+        "folder_create": ["data_input", "data_output"],
+        "var": {
+            "PYPEEC": "config/config_hpc.yaml",
+            "PYTHONUNBUFFERED": "1",
+            "CONFIGHPC": "1"
+        },
+        "conda": {
+            "path": "/optnfs/common/miniconda3/etc/profile.d/conda.sh",
+            "name": "pypeec"
+        }
+    },
+    "job": {
+        "resources": {
+            "time":  "23:00:00",
+            "nb_nodes":  "1",
+            "nb_tasks": "16",
+            "memory":  "64G",
+            "list_nodes":  null
+        },
+        "command": {
+            "exe": "python",
+            "script": "run_solve.py",
+            "arg_list": []
+        }
+    }
+}
