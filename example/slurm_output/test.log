@@ -1,17 +1,15 @@
-======================================== SLURM START
+================================== SLURM START - 11/28/23 19:55:56
 ==================== PARAM
 JOB TAG      : test
 LOG FILE     : slurm_output/test.log
 SLURM FILE   : slurm_output/test.slm
 ==================== TIME
-DATE GEN     : 11/28/23 15:04:43
-DATE RUN     : 11/28/23 15:08:16
+DATE GEN     : 11/28/23 19:54:40
+DATE RUN     : 11/28/23 19:55:56
 ==================== SLURM
-JOB ID       : 8564504
+JOB ID       : 8569020
 JOB NAME     : test
 JOB NODE     : m08
-==================== FOLDER DELETE
-==================== FOLDER CREATE
 ==================== ENV VAR
 ==================== RUN: hello
 enter script
@@ -23,4 +21,4 @@ enter script
     ARGUMENT = goodbye world!
     VARWORLD = welcome!
 exit script
-======================================== SLURM END
+================================== SLURM END - 11/28/23 19:55:56

@@ -171,7 +171,7 @@ def _generate_file(tag, filename_slurm, filename_log, job):
         _write_pragmas(fid, tag, filename_log, pragmas)
 
         # timing
-        cmd_time = '`date - u + "%D %H:%M:%S"`'
+        cmd_time = '`date -u +"%D %H:%M:%S"`'
 
         # write script header
         fid.write('echo "================================== SLURM START - %s"\n' % cmd_time)
