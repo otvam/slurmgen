@@ -3,9 +3,9 @@
 TAG          : test
 LOG FILE     : slurm_output/test.log
 SLURM FILE   : slurm_output/test.slm
-==================== INFO
-HOSTNAME     : m08.hpcc.dartmouth.edu
-DATE         : Mon Nov 27 14:39:24 EST 2023
+==================== TIME
+DATE GEN     : 11/28/23 15:04:43
+DATE RUN     : 11/28/23 15:08:16
 ==================== SLURM
 JOB ID       : 8564504
 JOB NAME     : test

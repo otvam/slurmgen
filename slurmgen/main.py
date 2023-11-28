@@ -10,6 +10,7 @@ __license__ = "BSD License"
 
 import sys
 import os.path
+import datetime
 import subprocess
 
 
@@ -65,6 +66,9 @@ def _write_summary(fid, tag, filename_slurm, filename_log):
         Path of the log file created by during the Slurm job.
     """
 
+    # get current timestamp
+    date = datetime.datetime.utcnow()
+
     # write the job name, log file, and script file
     fid.write('echo "==================== PARAM"\n')
     fid.write('echo "TAG          : %s"\n' % tag)
@@ -73,9 +77,9 @@ def _write_summary(fid, tag, filename_slurm, filename_log):
     fid.write('\n')
 
     # write data about the job submission
-    fid.write('echo "==================== INFO"\n')
-    fid.write('echo "HOSTNAME     : `hostname`"\n')
-    fid.write('echo "DATE         : `date`"\n')
+    fid.write('echo "==================== TIME"\n')
+    fid.write('echo "DATE GEN     : %s"\n' % date.strftime("%D %H:%M:%S"))
+    fid.write('echo "DATE RUN     : `date -u +"%D %H:%M:%S"`"\n')
     fid.write('\n')
 
     # write the job id, job name, and the assigned node names
