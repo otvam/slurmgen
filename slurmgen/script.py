@@ -67,11 +67,10 @@ def run_script():
         data = json.load(fid)
         tag = data["tag"]
         control = data["control"]
-        env = data["env"]
         job = data["job"]
 
     # create the Slurm script
-    main.run_data(tag, control, env, job)
+    main.run_data(tag, control, job)
 
     # return
     sys.exit(0)

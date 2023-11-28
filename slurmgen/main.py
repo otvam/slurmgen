@@ -10,6 +10,7 @@ __license__ = "BSD License"
 
 import sys
 import os.path
+import shutil
 import datetime
 import subprocess
 
@@ -90,7 +91,7 @@ def _write_summary(fid, tag, filename_slurm, filename_log):
     fid.write('\n')
 
 
-def _write_environment(fid, folder_delete, folder_create, var):
+def _write_environment(fid, var):
     """
     Handling of the folders and the environment variables.
 
@@ -98,29 +99,10 @@ def _write_environment(fid, folder_delete, folder_create, var):
     ----------
     fid : file
         File descriptor for the script.
-    folder_delete : list
-        Name of the folders that should be deleted at the start of the job.
-    folder_create : list
-        Name of the folders that should be created at the start of the job.
-    var : dict
+    vars : dict
         Dictionary of environment variable to be set and exported.
     """
 
-    # remove folders
-    if folder_delete:
-        fid.write('echo "==================== FOLDER DELETE"\n')
-        for value in folder_delete:
-            fid.write('rm -rf "%s"\n' % value)
-        fid.write('\n')
-
-    # create folders
-    if folder_create:
-        fid.write('echo "==================== FOLDER CREATE"\n')
-        for value in folder_create:
-            fid.write('mkdir -p "%s"\n' % value)
-        fid.write('\n')
-
-    # set environment variables
     if var:
         fid.write('echo "==================== ENV VAR"\n')
         for var, value in var.items():
@@ -156,7 +138,7 @@ def _write_command(fid, command):
     fid.write('\n')
 
 
-def _generate_file(tag, filename_slurm, filename_log, env, job):
+def _generate_file(tag, filename_slurm, filename_log, job):
     """
     Generate and write a Slurm script.
 
@@ -168,21 +150,14 @@ def _generate_file(tag, filename_slurm, filename_log, env, job):
         Path of the Slurm script to be created by this function.
     filename_log : string
         Path of the log file created by during the Slurm job.
-    env : dict
-        Name of the folders that should be deleted at the start of the job.
-        Name of the folders that should be created at the start of the job.
-        Dictionary of environment variable to be set and exported.
     job : dict
         Dictionary with the pragmas controlling the Slurm job.
+        Dictionary of environment variable to be set and exported.
         List of commands to be excecuted by the hob.
     """
 
     # extract data
-    var = env["var"]
-    folder_delete = env["folder_delete"]
-    folder_create = env["folder_create"]
-
-    # extract data
+    vars = job["vars"]
     pragmas = job["pragmas"]
     commands = job["commands"]
 
@@ -195,26 +170,30 @@ def _generate_file(tag, filename_slurm, filename_log, env, job):
         # write pragmas
         _write_pragmas(fid, tag, filename_log, pragmas)
 
+        # timing
+        cmd_time = '`date - u + "%D %H:%M:%S"`'
+
         # write script header
-        fid.write('echo "======================================== SLURM START"\n')
+        fid.write('echo "================================== SLURM START - %s"\n' % cmd_time)
         fid.write('\n')
 
         # write summary of the variables
         _write_summary(fid, tag, filename_slurm, filename_log)
 
         # write environment variables
-        _write_environment(fid, folder_delete, folder_create, var)
+        _write_environment(fid, vars)
 
         # write the commands to be executed
         for tmp in commands:
             _write_command(fid, tmp)
 
         # end script footer
-        fid.write('echo "======================================== SLURM END"\n')
+        fid.write('echo "================================== SLURM END - %s"\n' % cmd_time)
+        fid.write('\n')
         fid.write('exit 0\n')
 
 
-def run_data(tag, control, env, job):
+def run_data(tag, control, job):
     """
     Extract data (config, examples, or documentation).
 
@@ -223,26 +202,27 @@ def run_data(tag, control, env, job):
     tag : string
         Name of the job to be created.
     control : dict
-        Name of the folder for the script and log files.
         Switch controlling if previous script and log can be replaced.
         Switch controlling if the created script should be submitted to the cluster.
-    env : dict
+        Name of the output folder for the script and log files.
         Name of the folders that should be deleted at the start of the job.
         Name of the folders that should be created at the start of the job.
-        Dictionary of environment variable to be set and exported.
     job : dict
         Dictionary with the pragmas controlling the Slurm job.
+        Dictionary of environment variable to be set and exported.
         List of commands to be excecuted by the hob.
     """
 
     # extract data
     overwrite = control["overwrite"]
     sbatch = control["sbatch"]
-    folder = control["folder"]
+    folder_output = control["folder_output"]
+    folder_delete = control["folder_delete"]
+    folder_create = control["folder_create"]
 
     # get filenames
-    filename_slurm = os.path.join(folder, tag + ".slm")
-    filename_log = os.path.join(folder, tag + ".log")
+    filename_slurm = os.path.join(folder_output, tag + ".slm")
+    filename_log = os.path.join(folder_output, tag + ".log")
 
     # remove previous files (if selected)
     if overwrite:
@@ -255,6 +235,10 @@ def run_data(tag, control, env, job):
             os.remove(filename_log)
         except FileNotFoundError:
             pass
+        try:
+            os.mkdir(folder_output)
+        except FileExistsError:
+            pass
 
     # check that the output files are not existing
     print("info: check files")
@@ -264,12 +248,28 @@ def run_data(tag, control, env, job):
     if os.path.isfile(filename_log):
         print("error: log file already exists", file=sys.stderr)
         sys.exit(1)
-    if not os.path.isdir(folder):
-        os.makedirs(folder)
+    if not os.path.isdir(folder_output):
+        print("error: output folder does not exist", file=sys.stderr)
+        sys.exit(1)
+
+    # remove folders
+    print("info: remove folders")
+    for folder in folder_delete:
+        try:
+            shutil.rmtree(folder)
+        except FileNotFoundError:
+            pass
+
+    print("info: create folders")
+    for folder in folder_create:
+        try:
+            os.makedirs(folder)
+        except FileExistsError:
+            pass
 
     # create the Slurm script
     print("info: generate Slurm file")
-    _generate_file(tag, filename_slurm, filename_log, env, job)
+    _generate_file(tag, filename_slurm, filename_log, job)
 
     # submit the job (if selected)
     if sbatch:

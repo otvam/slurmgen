@@ -3,15 +3,9 @@
     "control": {
         "overwrite": true,
         "sbatch": true,
-        "folder": "slurm_output"
-    },
-    "env": {
+        "folder_output": "slurm_output",
         "folder_delete": ["data_output"],
-        "folder_create": ["data_output"],
-        "var": {
-            "PYTHONUNBUFFERED": "1",
-            "VARWORLD": "welcome!"
-        }
+        "folder_create": ["data_output"]
     },
     "job": {
         "pragmas": {
@@ -19,6 +13,10 @@
             "nodes":  "1",
             "ntasks-per-node": "2",
             "mem":  "8G"
+        },
+        "vars": {
+            "PYTHONUNBUFFERED": "1",
+            "VARWORLD": "welcome!"
         },
         "commands": [
             {
