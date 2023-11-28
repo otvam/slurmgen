@@ -53,6 +53,6 @@ sgen test.json
 
 ## Copyright
 
-> (c) 2023 - Thomas Guillod - Dartmouth College
+> (c) 2023 - Thomas Guillod
 > 
 >  BSD 2-Clause "Simplified" License

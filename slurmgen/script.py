@@ -23,7 +23,7 @@ def _get_parser():
 
     Returns
     -------
-    parser : object
+    parser : ArgumentParser
         Command line argument parser object.
     """
 

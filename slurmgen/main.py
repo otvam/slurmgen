@@ -71,7 +71,7 @@ def _write_summary(fid, tag, filename_slurm, filename_log):
 
     # write the job name, log file, and script file
     fid.write('echo "==================== PARAM"\n')
-    fid.write('echo "TAG          : %s"\n' % tag)
+    fid.write('echo "JOB TAG      : %s"\n' % tag)
     fid.write('echo "LOG FILE     : %s"\n' % filename_log)
     fid.write('echo "SLURM FILE   : %s"\n' % filename_slurm)
     fid.write('\n')
@@ -196,7 +196,7 @@ def _generate_file(tag, filename_slurm, filename_log, env, job):
         _write_pragmas(fid, tag, filename_log, pragmas)
 
         # write script header
-        fid.write('echo "================================= SLURM START"\n')
+        fid.write('echo "======================================== SLURM START"\n')
         fid.write('\n')
 
         # write summary of the variables

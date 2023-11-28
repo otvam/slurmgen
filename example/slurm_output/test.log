@@ -1,6 +1,6 @@
-================================= SLURM START
+======================================== SLURM START
 ==================== PARAM
-TAG          : test
+JOB TAG      : test
 LOG FILE     : slurm_output/test.log
 SLURM FILE   : slurm_output/test.slm
 ==================== TIME
