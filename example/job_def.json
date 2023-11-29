@@ -1,0 +1,17 @@
+{
+    "tag": "test",
+    "pragmas": {},
+    "vars": {"VARWORLD": "welcome!"},
+    "commands": [
+        {
+            "tag": "hello",
+            "executable": "python3",
+            "arguments": ["run_slurm.py", "hello", "hello world!"]
+        },
+        {
+            "tag": "goodbye",
+            "executable": "python3",
+            "arguments": ["run_slurm.py", "goodbye" ,"goodbye world!"]
+        }
+    ]
+}

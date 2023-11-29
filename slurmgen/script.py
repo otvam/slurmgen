@@ -37,9 +37,14 @@ def _get_parser():
 
     # add the argument
     parser.add_argument(
-        "file",
-        help="JSON file with the input data",
-        metavar="file",
+        "template",
+        help="JSON file with the job template",
+        metavar="template",
+    )
+    parser.add_argument(
+        "definition",
+        help="JSON file with the job definition",
+        metavar="definition",
     )
 
     return parser
@@ -58,19 +63,36 @@ def run_script():
     args = parser.parse_args()
 
     # check that the JSON file exists
-    if not os.path.isfile(args.file):
-        print('error: input file not found', file=sys.stderr)
+    if not os.path.isfile(args.template):
+        print('error: template file not found', file=sys.stderr)
+        sys.exit(1)
+    if not os.path.isfile(args.definition):
+        print('error: definition file not found', file=sys.stderr)
         sys.exit(1)
 
-    # load the data
-    with open(args.file, "r") as fid:
+    # load the template data
+    with open(args.template, "r") as fid:
+        data = json.load(fid)
+        control = data["control"]
+        pragmas_tmpl = data["pragmas"]
+        vars_tmpl = data["vars"]
+        commands_tmpl = data["commands"]
+
+    # load the definition data
+    with open(args.definition, "r") as fid:
         data = json.load(fid)
         tag = data["tag"]
-        control = data["control"]
-        job = data["job"]
+        pragmas_def = data["pragmas"]
+        vars_def = data["vars"]
+        commands_def = data["commands"]
+
+    # merge
+    pragmas = {**pragmas_tmpl, **pragmas_def}
+    vars = {**vars_tmpl, **vars_def}
+    commands = commands_tmpl + commands_def
 
     # create the Slurm script
-    main.run_data(tag, control, job)
+    main.run_data(tag, control, pragmas, vars, commands)
 
     # return
     sys.exit(0)

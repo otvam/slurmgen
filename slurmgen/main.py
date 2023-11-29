@@ -138,7 +138,7 @@ def _write_command(fid, command):
     fid.write('\n')
 
 
-def _generate_file(tag, filename_slurm, filename_log, job):
+def _generate_file(tag, filename_slurm, filename_log, pragmas, vars, commands):
     """
     Generate and write a Slurm script.
 
@@ -150,16 +150,13 @@ def _generate_file(tag, filename_slurm, filename_log, job):
         Path of the Slurm script to be created by this function.
     filename_log : string
         Path of the log file created by during the Slurm job.
-    job : dict
+    pragmas : dict
         Dictionary with the pragmas controlling the Slurm job.
+    vars : dict
         Dictionary of environment variable to be set and exported.
-        List of commands to be excecuted by the hob.
+    commands : list
+        List of commands to be executed by the hob.
     """
-
-    # extract data
-    vars = job["vars"]
-    pragmas = job["pragmas"]
-    commands = job["commands"]
 
     # write the data
     with open(filename_slurm, "w") as fid:
@@ -193,7 +190,7 @@ def _generate_file(tag, filename_slurm, filename_log, job):
         fid.write('exit 0\n')
 
 
-def run_data(tag, control, job):
+def run_data(tag, control, pragmas, vars, commands):
     """
     Extract data (config, examples, or documentation).
 
@@ -207,10 +204,12 @@ def run_data(tag, control, job):
         Name of the output folder for the script and log files.
         Name of the folders that should be deleted at the start of the job.
         Name of the folders that should be created at the start of the job.
-    job : dict
+    pragmas : dict
         Dictionary with the pragmas controlling the Slurm job.
+    vars : dict
         Dictionary of environment variable to be set and exported.
-        List of commands to be excecuted by the hob.
+    commands : list
+        List of commands to be executed by the hob.
     """
 
     # extract data
@@ -269,7 +268,7 @@ def run_data(tag, control, job):
 
     # create the Slurm script
     print("info: generate Slurm file")
-    _generate_file(tag, filename_slurm, filename_log, job)
+    _generate_file(tag, filename_slurm, filename_log, pragmas, vars, commands)
 
     # submit the job (if selected)
     if sbatch:
