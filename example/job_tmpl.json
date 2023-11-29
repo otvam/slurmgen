@@ -12,11 +12,12 @@
         "mem":  "8G"
     },
     "vars": {"PYTHONUNBUFFERED": "1"},
-    "commands": [
+    "pre_proc_commands": [
         {
             "tag": "version",
             "executable": "python3",
             "arguments": ["--version"]
         }
-    ]
+    ],
+    "post_proc_commands": []
 }

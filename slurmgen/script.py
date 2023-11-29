@@ -96,7 +96,8 @@ def run_script():
         control = data["control"]
         pragmas_tmpl = data["pragmas"]
         vars_tmpl = data["vars"]
-        commands_tmpl = data["commands"]
+        pre_proc_commands_tmpl = data["pre_proc_commands"]
+        post_proc_commands_tmpl = data["post_proc_commands"]
 
     # load the definition data
     with open(args.definition, "r") as fid:
@@ -109,7 +110,7 @@ def run_script():
     # merge
     pragmas = {**pragmas_tmpl, **pragmas_def}
     vars = {**vars_tmpl, **vars_def}
-    commands = commands_tmpl + commands_def
+    commands = pre_proc_commands_tmpl + commands_def + post_proc_commands_tmpl
 
     # create the Slurm script
     (filename_script, filename_log) = gen.run_data(tag, control, pragmas, vars, commands)

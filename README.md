@@ -6,9 +6,9 @@
 ## Summary
 
 **SlurmGen** is a very **simple** **Slurm** manager:
-* The job description is stored in a JSON file.
-* The JSON file is transformed into a Slurm script.
-* The Slurm file is submitted to the cluster.
+* The job description is stored in JSON files.
+* The JSON files are transformed into Slurm scripts.
+* The Slurm script can be run locally or on a Slurm Cluster.
 
 **SlurmGen** is only supporting a small **subset** of **Slurm**:
 * Create and delete folders.
