@@ -1,7 +1,5 @@
 """
-Module for creating Slurm script.
-    - Create the Slurm script.
-    - Run the Slurm script (optional).
+Module for creating a Slurm script.
 """
 
 __author__ = "Thomas Guillod"
@@ -9,11 +7,9 @@ __copyright__ = "Thomas Guillod - Dartmouth College"
 __license__ = "BSD License"
 
 import sys
-import stat
 import os.path
 import shutil
 import datetime
-import subprocess
 
 
 def _write_title(fid, tag):
@@ -207,15 +203,14 @@ def _generate_file(tag, filename_script, filename_log, pragmas, vars, commands):
 
 def run_data(tag, control, pragmas, vars, commands):
     """
-    Extract data (config, examples, or documentation).
+    Generate a Slurm script.
 
     Parameters
     ----------
     tag : string
         Name of the job to be created.
     control : dict
-        Switch controlling if previous script and log can be replaced.
-        Switch controlling if the created script should be submitted to the cluster.
+        Switch controlling if previous script and log should be replaced.
         Name of the output folder for the script and log files.
         Name of the folders that should be deleted at the start of the job.
         Name of the folders that should be created at the start of the job.
@@ -229,7 +224,6 @@ def run_data(tag, control, pragmas, vars, commands):
 
     # extract data
     overwrite = control["overwrite"]
-    run_type = control["run_type"]
     folder_output = control["folder_output"]
     folder_delete = control["folder_delete"]
     folder_create = control["folder_create"]
@@ -285,35 +279,4 @@ def run_data(tag, control, pragmas, vars, commands):
     print("info: generate Slurm file")
     _generate_file(tag, filename_script, filename_log, pragmas, vars, commands)
 
-    # make the script executable
-    st = os.stat(filename_script)
-    os.chmod(filename_script, st.st_mode | stat.S_IEXEC)
-
-    # submit Slurm job
-    if run_type=="slurm":
-        print("info: submit Slurm job")
-        try:
-            subprocess.run(["sbatch", filename_script], check=True)
-        except OSError:
-            print("error: sbatch error", file=sys.stderr)
-            sys.exit(1)
-
-    # submit Shell job
-    if run_type=="shell":
-        print("info: submit Shell job")
-        try:
-            fake_slurm = os.environ.copy()
-            fake_slurm["SLURM_JOB_ID"] = "NOT SLURM"
-            fake_slurm["SLURM_JOB_NAME"] = "NOT SLURM"
-            fake_slurm["SLURM_JOB_NODELIST"] = "NOT SLURM"
-            with open(filename_log, "w") as fid:
-                subprocess.run(
-                    [filename_script],
-                    check=True,
-                    env=fake_slurm,
-                    stderr=fid,
-                    stdout=fid,
-                )
-        except OSError:
-            print("error: sbatch error", file=sys.stderr)
-            sys.exit(1)
+    return filename_script, filename_log

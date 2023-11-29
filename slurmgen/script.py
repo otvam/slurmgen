@@ -14,7 +14,8 @@ import os
 import sys
 import json
 import argparse
-from slurmgen import main
+from slurmgen import gen
+from slurmgen import run
 
 
 def _get_parser():
@@ -46,6 +47,18 @@ def _get_parser():
         help="JSON file with the job definition",
         metavar="definition",
     )
+    parser.add_argument(
+        "-l", "--local",
+        help="Run the job locally for debugging",
+        action="store_true",
+        dest="local",
+    )
+    parser.add_argument(
+        "-c", "--cluster",
+        help="Run the job on the Slurm cluster",
+        action="store_true",
+        dest="cluster",
+    )
 
     return parser
 
@@ -53,9 +66,14 @@ def _get_parser():
 def run_script():
     """
     Entry point for the command line script.
-    Accept two arguments:
+
+    Require two arguments:
         - JSON file with the job template
         - JSON file with the job definition
+
+    Accept two options:
+        - "-l" or "--local" Run the job locally for debugging.
+        - "-c" or "--cluster" Run the job on the Slurm cluster.
     """
 
     # get argument parser
@@ -94,7 +112,10 @@ def run_script():
     commands = commands_tmpl + commands_def
 
     # create the Slurm script
-    main.run_data(tag, control, pragmas, vars, commands)
+    (filename_script, filename_log) = gen.run_data(tag, control, pragmas, vars, commands)
+
+    # run the Slurm script
+    run.run_data(filename_script, filename_log, args.local, args.cluster)
 
     # return
     sys.exit(0)

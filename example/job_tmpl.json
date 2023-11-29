@@ -1,7 +1,6 @@
 {
     "control": {
         "overwrite": true,
-        "run_type": "shell",
         "folder_output": "slurm_output",
         "folder_delete": ["data_output"],
         "folder_create": ["data_output"]
