@@ -12,6 +12,49 @@ import os.path
 import subprocess
 
 
+def _run_cmd(command, filename_log, env, write_log):
+    """
+    Run a Slurm script.
+
+    Parameters
+    ----------
+    command : list
+        Command to be executed.
+    filename_log : string
+        Path of the log file created by during the Slurm job.
+    env : dict
+        Dictionary with the environment variables.
+    write_log : bool
+        Write (or not) the output in a log file.
+    """
+
+    # run the command
+    try:
+        if write_log:
+            with open(filename_log, "w") as fid:
+                process = subprocess.run(
+                    command,
+                    env=env,
+                    stderr=fid,
+                    stdout=fid,
+                )
+        else:
+            process = subprocess.run(
+                command,
+                env=env,
+            )
+    except OSError:
+        print("error: command not found", file=sys.stderr)
+        sys.exit(1)
+
+    # check return code
+    if process.returncode == 0:
+        print("info: valid return code")
+    else:
+        print("error: invalid return code", file=sys.stderr)
+        sys.exit(process.returncode)
+
+
 def run_data(filename_script, filename_log, local, cluster):
     """
     Run a Slurm script.
@@ -34,29 +77,15 @@ def run_data(filename_script, filename_log, local, cluster):
 
     # submit Slurm job
     if cluster:
-        print("info: submit Slurm job")
-        try:
-            subprocess.run(["sbatch", filename_script], check=True)
-        except OSError:
-            print("error: sbatch error", file=sys.stderr)
-            sys.exit(1)
+        print("info: run Slurm job")
+        env = os.environ.copy()
+        _run_cmd(["sbatch", filename_script], filename_log, env, False)
 
     # run locally
     if local:
         print("info: run Shell job")
-        try:
-            fake_slurm = os.environ.copy()
-            fake_slurm["SLURM_JOB_ID"] = "NOT SLURM"
-            fake_slurm["SLURM_JOB_NAME"] = "NOT SLURM"
-            fake_slurm["SLURM_JOB_NODELIST"] = "NOT SLURM"
-            with open(filename_log, "w") as fid:
-                subprocess.run(
-                    [filename_script],
-                    check=True,
-                    env=fake_slurm,
-                    stderr=fid,
-                    stdout=fid,
-                )
-        except OSError:
-            print("error: sbatch error", file=sys.stderr)
-            sys.exit(1)
+        env = os.environ.copy()
+        env["SLURM_JOB_ID"] = "NOT SLURM"
+        env["SLURM_JOB_NAME"] = "NOT SLURM"
+        env["SLURM_JOB_NODELIST"] = "NOT SLURM"
+        _run_cmd([filename_script], filename_log, env, True)
