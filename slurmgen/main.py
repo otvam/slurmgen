@@ -9,15 +9,36 @@ __copyright__ = "Thomas Guillod - Dartmouth College"
 __license__ = "BSD License"
 
 import sys
+import stat
 import os.path
 import shutil
 import datetime
 import subprocess
 
 
-def _write_pragmas(fid, tag, filename_log, pragmas):
+def _write_title(fid, tag):
     """
-    Add the Slurm pragmas to the script.
+    Write simulation header.
+
+    Parameters
+    ----------
+    fid : file
+        File descriptor for the script.
+    tag : string
+        Name of the job to be created.
+    """
+
+    # timing
+    cmd_time = '`date -u +"%D %H:%M:%S"`'
+
+    # write script header
+    fid.write('echo "================================== %s - %s"\n' % (tag, cmd_time))
+    fid.write('\n')
+
+
+def _write_header(fid, tag, filename_log, pragmas):
+    """
+    Write the script header.
 
     Parameters
     ----------
@@ -42,7 +63,8 @@ def _write_pragmas(fid, tag, filename_log, pragmas):
         print("error: job log is already set by the script", file=sys.stderr)
         sys.exit(1)
 
-    # write the different pragmas
+    fid.write('#!/bin/bash\n')
+    fid.write('\n')
     fid.write('#SBATCH --job-name="%s"\n' % tag)
     fid.write('#SBATCH --output="%s"\n' % filename_log)
     for tag, val in pragmas.items():
@@ -50,9 +72,9 @@ def _write_pragmas(fid, tag, filename_log, pragmas):
     fid.write('\n')
 
 
-def _write_summary(fid, tag, filename_slurm, filename_log):
+def _write_summary(fid, tag, filename_script, filename_log):
     """
-    Add the different variables to the script.
+    Add the different variables to the Slurm script.
     The content of the variables will be added to the log.
 
     Parameters
@@ -61,8 +83,8 @@ def _write_summary(fid, tag, filename_slurm, filename_log):
         File descriptor for the script.
     tag : string
         Name of the job to be created.
-    filename_slurm : string
-        Path of the Slurm script to be created by this function.
+    filename_script : string
+        Path of the script controlling the simulation.
     filename_log : string
         Path of the log file created by during the Slurm job.
     """
@@ -74,7 +96,7 @@ def _write_summary(fid, tag, filename_slurm, filename_log):
     fid.write('echo "==================== PARAM"\n')
     fid.write('echo "JOB TAG      : %s"\n' % tag)
     fid.write('echo "LOG FILE     : %s"\n' % filename_log)
-    fid.write('echo "SLURM FILE   : %s"\n' % filename_slurm)
+    fid.write('echo "SCRIPT FILE   : %s"\n' % filename_script)
     fid.write('\n')
 
     # write data about the job submission
@@ -91,7 +113,7 @@ def _write_summary(fid, tag, filename_slurm, filename_log):
     fid.write('\n')
 
 
-def _write_environment(fid, var):
+def _write_vars(fid, var):
     """
     Handling of the folders and the environment variables.
 
@@ -110,7 +132,7 @@ def _write_environment(fid, var):
         fid.write('\n')
 
 
-def _write_command(fid, command):
+def _write_commands(fid, commands):
     """
     Add a command to the Slurm script.
 
@@ -118,36 +140,37 @@ def _write_command(fid, command):
     ----------
     fid : file
         File descriptor for the script.
-    command : dict
-        Dictionary describing the command to be added.
+    commands : list
+        List of commands to be executed by the job.
     """
 
-    # extract data
-    tag = command["tag"]
-    executable = command["executable"]
-    arguments = command["arguments"]
+    for tmp in commands:
+        # extract data
+        tag = tmp["tag"]
+        executable = tmp["executable"]
+        arguments = tmp["arguments"]
 
-    # write command
-    fid.write('echo "==================== RUN: %s"\n' % tag)
-    if arguments:
-        arg_all = ['"' + tmp + '"' for tmp in arguments]
-        arg_all = " ".join(arg_all)
-        fid.write('%s %s\n' % (executable, arg_all))
-    else:
-        fid.write('%s\n' % executable)
-    fid.write('\n')
+        # write command
+        fid.write('echo "==================== RUN: %s"\n' % tag)
+        if arguments:
+            arg_all = ['"' + tmp + '"' for tmp in arguments]
+            arg_all = " ".join(arg_all)
+            fid.write('%s %s\n' % (executable, arg_all))
+        else:
+            fid.write('%s\n' % executable)
+        fid.write('\n')
 
 
-def _generate_file(tag, filename_slurm, filename_log, pragmas, vars, commands):
+def _generate_file(tag, filename_script, filename_log, pragmas, vars, commands):
     """
-    Generate and write a Slurm script.
+    Generate and write a Slurm script or a Shell script.
 
     Parameters
     ----------
     tag : string
         Name of the job to be created.
-    filename_slurm : string
-        Path of the Slurm script to be created by this function.
+    filename_script : string
+        Path of the script controlling the simulation.
     filename_log : string
         Path of the log file created by during the Slurm job.
     pragmas : dict
@@ -155,40 +178,32 @@ def _generate_file(tag, filename_slurm, filename_log, pragmas, vars, commands):
     vars : dict
         Dictionary of environment variable to be set and exported.
     commands : list
-        List of commands to be executed by the hob.
+        List of commands to be executed by the job.
     """
 
     # write the data
-    with open(filename_slurm, "w") as fid:
-        # write shebang
-        fid.write('#!/bin/bash\n')
-        fid.write('\n')
-
+    with open(filename_script, "w") as fid:
         # write pragmas
-        _write_pragmas(fid, tag, filename_log, pragmas)
-
-        # timing
-        cmd_time = '`date -u +"%D %H:%M:%S"`'
+        _write_header(fid, tag, filename_log, pragmas)
 
         # write script header
-        fid.write('echo "================================== SLURM START - %s"\n' % cmd_time)
-        fid.write('\n')
+        _write_title(fid, tag)
 
         # write summary of the variables
-        _write_summary(fid, tag, filename_slurm, filename_log)
+        _write_summary(fid, tag, filename_script, filename_log)
 
         # write environment variables
-        _write_environment(fid, vars)
+        _write_vars(fid, vars)
 
         # write the commands to be executed
-        for tmp in commands:
-            _write_command(fid, tmp)
+        _write_commands(fid, commands)
 
         # end script footer
-        fid.write('echo "================================== SLURM END - %s"\n' % cmd_time)
-        fid.write('\n')
-        fid.write('exit 0\n')
+        _write_title(fid, tag)
 
+        # end script footer
+        fid.write('exit 0\n')
+        
 
 def run_data(tag, control, pragmas, vars, commands):
     """
@@ -209,25 +224,25 @@ def run_data(tag, control, pragmas, vars, commands):
     vars : dict
         Dictionary of environment variable to be set and exported.
     commands : list
-        List of commands to be executed by the hob.
+        List of commands to be executed by the job.
     """
 
     # extract data
     overwrite = control["overwrite"]
-    sbatch = control["sbatch"]
+    run_type = control["run_type"]
     folder_output = control["folder_output"]
     folder_delete = control["folder_delete"]
     folder_create = control["folder_create"]
 
     # get filenames
-    filename_slurm = os.path.join(folder_output, tag + ".slm")
+    filename_script = os.path.join(folder_output, tag + ".sh")
     filename_log = os.path.join(folder_output, tag + ".log")
 
     # remove previous files (if selected)
     if overwrite:
         print("info: remove existing files")
         try:
-            os.remove(filename_slurm)
+            os.remove(filename_script)
         except FileNotFoundError:
             pass
         try:
@@ -241,8 +256,8 @@ def run_data(tag, control, pragmas, vars, commands):
 
     # check that the output files are not existing
     print("info: check files")
-    if os.path.isfile(filename_slurm):
-        print("error: slurm file already exists", file=sys.stderr)
+    if os.path.isfile(filename_script):
+        print("error: Slurm file already exists", file=sys.stderr)
         sys.exit(1)
     if os.path.isfile(filename_log):
         print("error: log file already exists", file=sys.stderr)
@@ -266,15 +281,39 @@ def run_data(tag, control, pragmas, vars, commands):
         except FileExistsError:
             pass
 
-    # create the Slurm script
+    # create the script
     print("info: generate Slurm file")
-    _generate_file(tag, filename_slurm, filename_log, pragmas, vars, commands)
+    _generate_file(tag, filename_script, filename_log, pragmas, vars, commands)
 
-    # submit the job (if selected)
-    if sbatch:
+    # make the script executable
+    st = os.stat(filename_script)
+    os.chmod(filename_script, st.st_mode | stat.S_IEXEC)
+
+    # submit Slurm job
+    if run_type=="slurm":
         print("info: submit Slurm job")
         try:
-            subprocess.run(["sbatch", filename_slurm], check=True)
+            subprocess.run(["sbatch", filename_script], check=True)
+        except OSError:
+            print("error: sbatch error", file=sys.stderr)
+            sys.exit(1)
+
+    # submit Shell job
+    if run_type=="shell":
+        print("info: submit Shell job")
+        try:
+            fake_slurm = os.environ.copy()
+            fake_slurm["SLURM_JOB_ID"] = "NOT SLURM"
+            fake_slurm["SLURM_JOB_NAME"] = "NOT SLURM"
+            fake_slurm["SLURM_JOB_NODELIST"] = "NOT SLURM"
+            with open(filename_log, "w") as fid:
+                subprocess.run(
+                    [filename_script],
+                    check=True,
+                    env=fake_slurm,
+                    stderr=fid,
+                    stdout=fid,
+                )
         except OSError:
             print("error: sbatch error", file=sys.stderr)
             sys.exit(1)

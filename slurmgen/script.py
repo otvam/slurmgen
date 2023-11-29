@@ -53,7 +53,9 @@ def _get_parser():
 def run_script():
     """
     Entry point for the command line script.
-    Accept a single argument with the path of the JSON file.
+    Accept two arguments:
+        - JSON file with the job template
+        - JSON file with the job definition
     """
 
     # get argument parser

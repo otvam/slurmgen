@@ -31,10 +31,12 @@ An example is located in the `example` folder of the repository:
 
 ```bash
 # Running this command will:
-#   - Create a Slurm script "slurm_output/test.slm"
+#   - Read the job template file "job_tmpl.json"
+#   - Read the job definition file "job_def.json"
+#   - Create a Slurm script "slurm_output/test.sh"
 #   - Put the log file in "slurm_output/test.log"
-#   - Run the Slurm script on the cluster
-sgen test.json
+#   - Run the Slurm script on the cluster or locally
+sgen job_tmpl.json job_def.json
 ```
 
 ## Project Links

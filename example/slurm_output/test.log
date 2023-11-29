@@ -1,16 +1,18 @@
-================================== SLURM START - 11/28/23 19:55:56
+================================== test - 11/29/23 01:55:51
 ==================== PARAM
 JOB TAG      : test
 LOG FILE     : slurm_output/test.log
-SLURM FILE   : slurm_output/test.slm
+SCRIPT FILE   : slurm_output/test.sh
 ==================== TIME
-DATE GEN     : 11/28/23 19:54:40
-DATE RUN     : 11/28/23 19:55:56
+DATE GEN     : 11/29/23 01:55:51
+DATE RUN     : 11/29/23 01:55:51
 ==================== SLURM
-JOB ID       : 8569020
-JOB NAME     : test
-JOB NODE     : m08
+JOB ID       : NOT SLURM
+JOB NAME     : NOT SLURM
+JOB NODE     : NOT SLURM
 ==================== ENV VAR
+==================== RUN: version
+Python 3.10.12
 ==================== RUN: hello
 enter script
     ARGUMENT = hello world!
@@ -21,4 +23,4 @@ enter script
     ARGUMENT = goodbye world!
     VARWORLD = welcome!
 exit script
-================================== SLURM END - 11/28/23 19:55:56
+================================== test - 11/29/23 01:55:51

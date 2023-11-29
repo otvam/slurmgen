@@ -7,15 +7,15 @@
 #SBATCH --ntasks-per-node="2"
 #SBATCH --mem="8G"
 
-echo "================================== SLURM START - `date -u +"%D %H:%M:%S"`"
+echo "================================== test - `date -u +"%D %H:%M:%S"`"
 
 echo "==================== PARAM"
 echo "JOB TAG      : test"
 echo "LOG FILE     : slurm_output/test.log"
-echo "SLURM FILE   : slurm_output/test.slm"
+echo "SCRIPT FILE   : slurm_output/test.sh"
 
 echo "==================== TIME"
-echo "DATE GEN     : 11/28/23 19:54:40"
+echo "DATE GEN     : 11/29/23 01:55:51"
 echo "DATE RUN     : `date -u +"%D %H:%M:%S"`"
 
 echo "==================== SLURM"
@@ -27,12 +27,15 @@ echo "==================== ENV VAR"
 export PYTHONUNBUFFERED="1"
 export VARWORLD="welcome!"
 
+echo "==================== RUN: version"
+python3 "--version"
+
 echo "==================== RUN: hello"
 python3 "run_slurm.py" "hello" "hello world!"
 
 echo "==================== RUN: goodbye"
 python3 "run_slurm.py" "goodbye" "goodbye world!"
 
-echo "================================== SLURM END - `date -u +"%D %H:%M:%S"`"
+echo "================================== test - `date -u +"%D %H:%M:%S"`"
 
 exit 0
