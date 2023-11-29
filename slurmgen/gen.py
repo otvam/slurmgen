@@ -92,7 +92,7 @@ def _write_summary(fid, tag, filename_script, filename_log):
     fid.write('echo "==================== PARAM"\n')
     fid.write('echo "JOB TAG      : %s"\n' % tag)
     fid.write('echo "LOG FILE     : %s"\n' % filename_log)
-    fid.write('echo "SCRIPT FILE   : %s"\n' % filename_script)
+    fid.write('echo "SCRIPT FILE  : %s"\n' % filename_script)
     fid.write('\n')
 
     # write data about the job submission
