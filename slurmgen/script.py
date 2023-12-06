@@ -72,6 +72,20 @@ def _get_parser():
         dest="tag",
         default=None,
     )
+    parser.add_argument(
+        "-ok", "--afterok",
+        help="Run after successful dependency",
+        action="store",
+        dest="afterok",
+        default=None,
+    )
+    parser.add_argument(
+        "-any", "--afterany",
+        help="Run after terminated dependency",
+        action="store",
+        dest="afterany",
+        default=None,
+    )
 
     return parser
 
@@ -89,6 +103,8 @@ def run_script():
         - "-c" or "--cluster" Run the job on the Slurm cluster.
         - "-o" or "--overwrite" Overwrite existing files.
         - "-t" or "--tag" Overwrite the job name.
+        - "-ok" or "--afterok" Run after successful dependency.
+        - "-any" or "--afterany" Run after terminated dependency.
     """
 
     # get argument parser
@@ -131,6 +147,8 @@ def run_script():
     cluster = control["cluster"] or args.cluster
     local = control["local"] or args.local
     overwrite = control["overwrite"] or args.overwrite
+    afterok = args.afterok
+    afterany = args.afterany
 
     # merge
     pragmas = {**pragmas_tmpl, **pragmas_def}
@@ -141,7 +159,7 @@ def run_script():
     (filename_script, filename_log) = gen.run_data(tag, overwrite, folder, pragmas, vars, commands)
 
     # run the Slurm script
-    run.run_data(filename_script, filename_log, local, cluster)
+    run.run_data(filename_script, filename_log, local, cluster, afterok, afterany)
 
     # return
     sys.exit(0)

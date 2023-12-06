@@ -55,7 +55,7 @@ def _run_cmd(command, filename_log, env, write_log):
         sys.exit(process.returncode)
 
 
-def run_data(filename_script, filename_log, local, cluster):
+def run_data(filename_script, filename_log, local, cluster, afterok, afterany):
     """
     Run a Slurm script.
 
@@ -69,6 +69,10 @@ def run_data(filename_script, filename_log, local, cluster):
         Run (or not) the job locally.
     cluster : bool
         Run (or not) the job on the cluster.
+    afterok : string
+        Job ids in the successful dependency list.
+    afterany : string
+        Job ids in the terminated dependency list.
     """
 
     # make the script executable
@@ -78,14 +82,39 @@ def run_data(filename_script, filename_log, local, cluster):
     # submit Slurm job
     if cluster:
         print("info: run Slurm job")
+
+        # find env
         env = os.environ.copy()
-        _run_cmd(["sbatch", filename_script], filename_log, env, False)
+
+        # find dependencies
+        dep = []
+        if afterok is not None:
+            dep.append("afterok:%s" % afterok)
+        if afterany is not None:
+            dep.append("afterany:%s" % afterany)
+
+        # find command
+        if dep:
+            dep = ",".join(dep)
+            command = ["sbatch", "--dependency=" + dep, filename_script]
+        else:
+            command = ["sbatch", filename_script]
+
+        # run
+        _run_cmd(command, filename_log, env, False)
 
     # run locally
     if local:
         print("info: run Shell job")
+
+        # find env
         env = os.environ.copy()
         env["SLURM_JOB_ID"] = "NOT SLURM"
         env["SLURM_JOB_NAME"] = "NOT SLURM"
         env["SLURM_JOB_NODELIST"] = "NOT SLURM"
-        _run_cmd([filename_script], filename_log, env, True)
+
+        # find command
+        command = [filename_script]
+
+        # run
+        _run_cmd(command, filename_log, env, True)
