@@ -1,6 +1,10 @@
 {
     "control": {
         "overwrite": true,
+        "cluster": false,
+        "local": false
+    },
+    "folder": {
         "folder_output": "slurm_output",
         "folder_delete": ["data_output"],
         "folder_create": ["data_output"]

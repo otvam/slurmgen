@@ -201,7 +201,7 @@ def _generate_file(tag, filename_script, filename_log, pragmas, vars, commands):
         fid.write('exit 0\n')
         
 
-def run_data(tag, control, pragmas, vars, commands):
+def run_data(tag, overwrite, folder, pragmas, vars, commands):
     """
     Generate a Slurm script.
 
@@ -209,8 +209,9 @@ def run_data(tag, control, pragmas, vars, commands):
     ----------
     tag : string
         Name of the job to be created.
-    control : dict
+    tag : bool
         Switch controlling if previous script and log should be replaced.
+    folder : dict
         Name of the output folder for the script and log files.
         Name of the folders that should be deleted at the start of the job.
         Name of the folders that should be created at the start of the job.
@@ -223,10 +224,9 @@ def run_data(tag, control, pragmas, vars, commands):
     """
 
     # extract data
-    overwrite = control["overwrite"]
-    folder_output = control["folder_output"]
-    folder_delete = control["folder_delete"]
-    folder_create = control["folder_create"]
+    folder_output = folder["folder_output"]
+    folder_delete = folder["folder_delete"]
+    folder_create = folder["folder_create"]
 
     # get filenames
     filename_script = os.path.join(folder_output, tag + ".sh")

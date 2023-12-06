@@ -60,6 +60,12 @@ def _get_parser():
         dest="cluster",
     )
     parser.add_argument(
+        "-o", "--overwrite",
+        help="Overwrite existing files",
+        action="store_true",
+        dest="cluster",
+    )
+    parser.add_argument(
         "-t", "--tag",
         help="Overwrite the job name",
         action="store",
@@ -81,6 +87,7 @@ def run_script():
     Accept several options:
         - "-l" or "--local" Run the job locally for debugging.
         - "-c" or "--cluster" Run the job on the Slurm cluster.
+        - "-o" or "--overwrite" Overwrite existing files.
         - "-t" or "--tag" Overwrite the job name.
     """
 
@@ -102,6 +109,7 @@ def run_script():
     with open(args.template, "r") as fid:
         data = json.load(fid)
         control = data["control"]
+        folder = data["folder"]
         pragmas_tmpl = data["pragmas"]
         vars_tmpl = data["vars"]
         pre_proc_commands_tmpl = data["pre_proc_commands"]
@@ -115,9 +123,14 @@ def run_script():
         vars_def = data["vars"]
         commands_def = data["commands"]
 
-    # replace
+    # replace tag
     if args.tag is not None:
         tag = args.tag
+
+    # find control
+    cluster = control["cluster"] or args.cluster
+    local = control["local"] or args.local
+    overwrite = control["overwrite"] or args.overwrite
 
     # merge
     pragmas = {**pragmas_tmpl, **pragmas_def}
@@ -125,10 +138,10 @@ def run_script():
     commands = pre_proc_commands_tmpl + commands_def + post_proc_commands_tmpl
 
     # create the Slurm script
-    (filename_script, filename_log) = gen.run_data(tag, control, pragmas, vars, commands)
+    (filename_script, filename_log) = gen.run_data(tag, overwrite, folder, pragmas, vars, commands)
 
     # run the Slurm script
-    run.run_data(filename_script, filename_log, args.local, args.cluster)
+    run.run_data(filename_script, filename_log, local, cluster)
 
     # return
     sys.exit(0)
