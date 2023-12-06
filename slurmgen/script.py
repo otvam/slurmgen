@@ -59,6 +59,13 @@ def _get_parser():
         action="store_true",
         dest="cluster",
     )
+    parser.add_argument(
+        "-t", "--tag",
+        help="Overwrite the job name",
+        action="store",
+        dest="tag",
+        default=None,
+    )
 
     return parser
 
@@ -71,9 +78,10 @@ def run_script():
         - JSON file with the job template
         - JSON file with the job definition
 
-    Accept two options:
+    Accept several options:
         - "-l" or "--local" Run the job locally for debugging.
         - "-c" or "--cluster" Run the job on the Slurm cluster.
+        - "-t" or "--tag" Overwrite the job name.
     """
 
     # get argument parser
@@ -106,6 +114,10 @@ def run_script():
         pragmas_def = data["pragmas"]
         vars_def = data["vars"]
         commands_def = data["commands"]
+
+    # replace
+    if args.tag is not None:
+        tag = args.tag
 
     # merge
     pragmas = {**pragmas_tmpl, **pragmas_def}
