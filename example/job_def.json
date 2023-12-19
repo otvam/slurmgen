@@ -1,8 +1,31 @@
 {
     "tag": "test",
-    "pragmas": {},
-    "vars": {"VARWORLD": "welcome!"},
+    "control": {
+        "overwrite": true,
+        "cluster": false,
+        "local": false
+    },
+    "folder": {
+        "folder_output": "slurm_output",
+        "folder_delete": ["data_output"],
+        "folder_create": ["data_output"]
+    },
+    "pragmas": {
+        "time":  "4:00:00",
+        "nodes":  "1",
+        "ntasks-per-node": "2",
+        "mem":  "8G"
+    },
+    "vars": {
+        "PYTHONUNBUFFERED": "1",
+        "VARWORLD": "welcome!"
+    },
     "commands": [
+        {
+            "tag": "version",
+            "executable": "python3",
+            "arguments": ["--version"]
+        },
         {
             "tag": "hello",
             "executable": "python3",

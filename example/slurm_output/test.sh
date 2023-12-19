@@ -15,7 +15,7 @@ echo "LOG FILE     : slurm_output/test.log"
 echo "SCRIPT FILE  : slurm_output/test.sh"
 
 echo "==================== TIME"
-echo "DATE GEN     : 12/06/23 16:58:51"
+echo "DATE GEN     : 12/19/23 17:51:20"
 echo "DATE RUN     : `date -u +"%D %H:%M:%S"`"
 
 echo "==================== SLURM"

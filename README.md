@@ -24,7 +24,6 @@ SlurmGen is written in Python without any external dependencies.
 ## Example
 
 An example is located in the `example` folder of the repository:
-* `job_tmpl.json` contains the job template
 * `job_def.json` contains the job definition
 * `run_slurm.py` contains is dummy script executed by the jon
 * `slurm_output` contains the generated Slurm script and log file
@@ -32,13 +31,13 @@ An example is located in the `example` folder of the repository:
 
 ```bash
 # Create a Slurm script.
-sgen job_tmpl.json job_def.json
+sgen job_def.json
 
 # Create a Slurm script and run the job locally.
-sgen --local job_tmpl.json job_def.json
+sgen --local job_def.json
 
 # Create a Slurm script and run the job on the cluster.
-sgen --cluster job_tmpl.json job_def.json
+sgen --cluster job_def.json
 ```
 
 ## Project Links

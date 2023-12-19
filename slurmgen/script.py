@@ -38,11 +38,6 @@ def _get_parser():
 
     # add the argument
     parser.add_argument(
-        "template",
-        help="JSON file with the job template",
-        metavar="template",
-    )
-    parser.add_argument(
         "definition",
         help="JSON file with the job definition",
         metavar="definition",
@@ -94,9 +89,7 @@ def run_script():
     """
     Entry point for the command line script.
 
-    Require two arguments:
-        - JSON file with the job template
-        - JSON file with the job definition
+    Require one argument with the JSON file with the job definition.:
 
     Accept several options:
         - "-l" or "--local" Run the job locally for debugging.
@@ -114,30 +107,19 @@ def run_script():
     args = parser.parse_args()
 
     # check that the JSON file exists
-    if not os.path.isfile(args.template):
-        print('error: template file not found', file=sys.stderr)
-        sys.exit(1)
     if not os.path.isfile(args.definition):
         print('error: definition file not found', file=sys.stderr)
         sys.exit(1)
 
-    # load the template data
-    with open(args.template, "r") as fid:
-        data = json.load(fid)
-        control = data["control"]
-        folder = data["folder"]
-        pragmas_tmpl = data["pragmas"]
-        vars_tmpl = data["vars"]
-        pre_proc_commands_tmpl = data["pre_proc_commands"]
-        post_proc_commands_tmpl = data["post_proc_commands"]
-
-    # load the definition data
+    # load the JSON data
     with open(args.definition, "r") as fid:
         data = json.load(fid)
         tag = data["tag"]
-        pragmas_def = data["pragmas"]
-        vars_def = data["vars"]
-        commands_def = data["commands"]
+        control = data["control"]
+        folder = data["folder"]
+        pragmas = data["pragmas"]
+        vars = data["vars"]
+        commands = data["commands"]
 
     # replace tag
     if args.tag is not None:
@@ -149,11 +131,6 @@ def run_script():
     overwrite = control["overwrite"] or args.overwrite
     afterok = args.afterok
     afterany = args.afterany
-
-    # merge
-    pragmas = {**pragmas_tmpl, **pragmas_def}
-    vars = {**vars_tmpl, **vars_def}
-    commands = pre_proc_commands_tmpl + commands_def + post_proc_commands_tmpl
 
     # create the Slurm script
     (filename_script, filename_log) = gen.run_data(tag, overwrite, folder, pragmas, vars, commands)
