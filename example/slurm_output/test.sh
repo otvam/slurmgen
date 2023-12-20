@@ -15,7 +15,7 @@ echo "LOG FILE     : slurm_output/test.log"
 echo "SCRIPT FILE  : slurm_output/test.sh"
 
 echo "==================== TIME"
-echo "DATE GEN     : 12/19/23 17:51:20"
+echo "DATE GEN     : 12/20/23 13:40:09"
 echo "DATE RUN     : `date -u +"%D %H:%M:%S"`"
 
 echo "==================== SLURM"
@@ -25,7 +25,7 @@ echo "JOB NODE     : $SLURM_JOB_NODELIST"
 
 echo "==================== ENV VAR"
 export PYTHONUNBUFFERED="1"
-export VARWORLD="welcome!"
+export VARWORLD="Welcome to everyone!"
 
 echo "==================== RUN: version"
 python3 "--version"

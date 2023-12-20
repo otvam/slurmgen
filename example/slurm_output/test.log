@@ -1,11 +1,11 @@
-================================== test - 12/19/23 17:51:20
+================================== test - 12/20/23 13:40:09
 ==================== PARAM
 JOB TAG      : test
 LOG FILE     : slurm_output/test.log
 SCRIPT FILE  : slurm_output/test.sh
 ==================== TIME
-DATE GEN     : 12/19/23 17:51:20
-DATE RUN     : 12/19/23 17:51:20
+DATE GEN     : 12/20/23 13:40:09
+DATE RUN     : 12/20/23 13:40:09
 ==================== SLURM
 JOB ID       : NOT SLURM
 JOB NAME     : NOT SLURM
@@ -16,11 +16,11 @@ Python 3.10.12
 ==================== RUN: hello
 enter script
     ARGUMENT = hello world!
-    VARWORLD = welcome!
+    VARWORLD = Welcome to everyone!
 exit script
 ==================== RUN: goodbye
 enter script
     ARGUMENT = goodbye world!
-    VARWORLD = welcome!
+    VARWORLD = Welcome to everyone!
 exit script
-================================== test - 12/19/23 17:51:20
+================================== test - 12/20/23 13:40:09

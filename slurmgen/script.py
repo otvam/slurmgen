@@ -10,9 +10,10 @@ __copyright__ = "Thomas Guillod - Dartmouth College"
 __license__ = "BSD License"
 
 
-import os
 import sys
 import json
+import ast
+import string
 import argparse
 from slurmgen import gen
 from slurmgen import run
@@ -38,10 +39,26 @@ def _get_parser():
 
     # add the argument
     parser.add_argument(
-        "definition",
+        "def_file",
         help="JSON file with the job definition",
-        metavar="definition",
+        metavar="def_file",
     )
+
+    # add the template options
+    parser.add_argument(
+        "-tf", "--tmpl_file",
+        help="JSON file with template data",
+        action="store",
+        dest="tmpl_file",
+    )
+    parser.add_argument(
+        "-td", "--tmpl_data",
+        help="Dictionary with template data",
+        action="store",
+        dest="tmpl_data",
+    )
+
+    # add run options
     parser.add_argument(
         "-l", "--local",
         help="Run the job locally for debugging",
@@ -67,6 +84,8 @@ def _get_parser():
         dest="tag",
         default=None,
     )
+
+    # add dependency options
     parser.add_argument(
         "-ok", "--afterok",
         help="Run after successful dependency",
@@ -92,12 +111,17 @@ def run_script():
     Require one argument with the JSON file with the job definition.:
 
     Accept several options:
-        - "-l" or "--local" Run the job locally for debugging.
-        - "-c" or "--cluster" Run the job on the Slurm cluster.
-        - "-o" or "--overwrite" Overwrite existing files.
-        - "-t" or "--tag" Overwrite the job name.
-        - "-ok" or "--afterok" Run after successful dependency.
-        - "-any" or "--afterany" Run after terminated dependency.
+        - Template
+            - "-tf" or "--tmpl_file" JSON file with template data.
+            - "-td" or "--tmpl_data" Dictionary with template data.
+        - Run options
+            - "-l" or "--local" Run the job locally for debugging.
+            - "-c" or "--cluster" Run the job on the Slurm cluster.
+            - "-o" or "--overwrite" Overwrite existing files.
+            - "-t" or "--tag" Overwrite the job name.
+        - Dependency options
+            - "-ok" or "--afterok" Run after successful dependency.
+            - "-any" or "--afterany" Run after terminated dependency.
     """
 
     # get argument parser
@@ -106,20 +130,66 @@ def run_script():
     # parse the arguments
     args = parser.parse_args()
 
-    # check that the JSON file exists
-    if not os.path.isfile(args.definition):
+    # load the JSON data
+    try:
+        with open(args.def_file, "r") as fid:
+            def_data = fid.read()
+    except OSError:
         print('error: definition file not found', file=sys.stderr)
         sys.exit(1)
 
+    # init template
+    tmpl = {}
+
+    # load the template from a file
+    if args.tmpl_file is not None:
+        # load the template file
+        try:
+            with open(args.tmpl_file, "r") as fid:
+                tmpl_data = fid.read()
+        except OSError:
+            print('error: template file not found', file=sys.stderr)
+            sys.exit(1)
+
+        # parse the template data
+        try:
+            tmpl_tmp = json.loads(tmpl_data)
+        except json.JSONDecodeError as ex:
+            print('error: template file is invalid', file=sys.stderr)
+            sys.exit(1)
+
+        # merge the template data
+        tmpl = {**tmpl, **tmpl_tmp}
+
+    # load the template file
+    if args.tmpl_data is not None:
+        try:
+            tmpl_tmp = ast.literal_eval(args.tmpl_data)
+        except (ValueError, TypeError, SyntaxError):
+            print('error: template data is invalid', file=sys.stderr)
+            sys.exit(1)
+
+        # merge the template data
+        tmpl = {**tmpl, **tmpl_tmp}
+
+    # appy the template
+    obj = string.Template(def_data)
+    def_data = obj.substitute(tmpl)
+
     # load the JSON data
-    with open(args.definition, "r") as fid:
-        data = json.load(fid)
-        tag = data["tag"]
-        control = data["control"]
-        folder = data["folder"]
-        pragmas = data["pragmas"]
-        vars = data["vars"]
-        commands = data["commands"]
+    try:
+        def_data = json.loads(def_data)
+    except json.JSONDecodeError as ex:
+        print('error: definition file is invalid', file=sys.stderr)
+        sys.exit(1)
+
+    # extract data
+    tag = def_data["tag"]
+    control = def_data["control"]
+    folder = def_data["folder"]
+    pragmas = def_data["pragmas"]
+    vars = def_data["vars"]
+    commands = def_data["commands"]
 
     # replace tag
     if args.tag is not None:
@@ -129,6 +199,8 @@ def run_script():
     cluster = control["cluster"] or args.cluster
     local = control["local"] or args.local
     overwrite = control["overwrite"] or args.overwrite
+
+    # dependency options
     afterok = args.afterok
     afterany = args.afterany
 
