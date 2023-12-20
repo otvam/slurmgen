@@ -52,10 +52,10 @@ def _get_parser():
         dest="tmpl_file",
     )
     parser.add_argument(
-        "-td", "--tmpl_data",
+        "-td", "--tmpl_str",
         help="Dictionary with template data",
         action="store",
-        dest="tmpl_data",
+        dest="tmpl_str",
     )
 
     # add run options
@@ -104,6 +104,103 @@ def _get_parser():
     return parser
 
 
+def _get_template(tmpl_file, tmpl_str):
+    """
+    Load the template data (from file and from string).
+
+    Parameters
+    ----------
+    tmpl_file : string
+        String with a JSON file containing template data.
+    tmpl_str : string
+        String with a Python dictionary containing template data.
+
+    Returns
+    -------
+    tmpl_data : dict
+        Dictionary with the parsed template data.
+    """
+
+    # init template
+    tmpl_data = {}
+
+    # load the template from a file
+    if tmpl_file is not None:
+        # load the template file
+        try:
+            with open(tmpl_file, "r") as fid:
+                data_raw = fid.read()
+        except OSError:
+            print("error: template file not found", file=sys.stderr)
+            sys.exit(1)
+
+        # parse the template data
+        try:
+            tmpl_tmp = json.loads(data_raw)
+        except json.JSONDecodeError as ex:
+            print("error: template file is invalid: %s" % str(ex), file=sys.stderr)
+            sys.exit(1)
+
+        # merge the template data
+        tmpl_data = {**tmpl_data, **tmpl_tmp}
+
+    # load the template file
+    if tmpl_str is not None:
+        try:
+            tmpl_tmp = ast.literal_eval(tmpl_str)
+        except (ValueError, TypeError, SyntaxError):
+            print("error: template data is invalid", file=sys.stderr)
+            sys.exit(1)
+
+        # merge the template data
+        tmpl_data = {**tmpl_data, **tmpl_tmp}
+
+    return tmpl_data
+
+
+def _get_def(def_file, tmpl_data):
+    """
+    Load the job definition file and run the template.
+
+    Parameters
+    ----------
+    def_file : string
+        String with a JSON file containing the job definition data.
+    tmpl_data : dict
+        Dictionary with the parsed template data.
+
+    Returns
+    -------
+    def_data : dict
+        Dictionary with the parsed definition data.
+    """
+
+    # load the JSON data
+    try:
+        with open(def_file, "r") as fid:
+            data_raw = fid.read()
+    except OSError:
+        print("error: definition file not found", file=sys.stderr)
+        sys.exit(1)
+
+    # appy the template
+    try:
+        obj = string.Template(data_raw)
+        def_data = obj.substitute(tmpl_data)
+    except (ValueError, KeyError) as ex:
+        print("error: template parsing error: %s" % str(ex), file=sys.stderr)
+        sys.exit(1)
+
+    # load the JSON data
+    try:
+        def_data = json.loads(def_data)
+    except json.JSONDecodeError as ex:
+        print("error: definition file is invalid: %s" % str(ex), file=sys.stderr)
+        sys.exit(1)
+
+    return def_data
+
+
 def run_script():
     """
     Entry point for the command line script.
@@ -113,7 +210,7 @@ def run_script():
     Accept several options:
         - Template
             - "-tf" or "--tmpl_file" JSON file with template data.
-            - "-td" or "--tmpl_data" Dictionary with template data.
+            - "-td" or "--tmpl_str" Dictionary with template data.
         - Run options
             - "-l" or "--local" Run the job locally for debugging.
             - "-c" or "--cluster" Run the job on the Slurm cluster.
@@ -130,58 +227,11 @@ def run_script():
     # parse the arguments
     args = parser.parse_args()
 
-    # load the JSON data
-    try:
-        with open(args.def_file, "r") as fid:
-            def_data = fid.read()
-    except OSError:
-        print('error: definition file not found', file=sys.stderr)
-        sys.exit(1)
+    # get template data
+    tmpl_data = _get_template(args.tmpl_file, args.tmpl_str)
 
-    # init template
-    tmpl = {}
-
-    # load the template from a file
-    if args.tmpl_file is not None:
-        # load the template file
-        try:
-            with open(args.tmpl_file, "r") as fid:
-                tmpl_data = fid.read()
-        except OSError:
-            print('error: template file not found', file=sys.stderr)
-            sys.exit(1)
-
-        # parse the template data
-        try:
-            tmpl_tmp = json.loads(tmpl_data)
-        except json.JSONDecodeError as ex:
-            print('error: template file is invalid', file=sys.stderr)
-            sys.exit(1)
-
-        # merge the template data
-        tmpl = {**tmpl, **tmpl_tmp}
-
-    # load the template file
-    if args.tmpl_data is not None:
-        try:
-            tmpl_tmp = ast.literal_eval(args.tmpl_data)
-        except (ValueError, TypeError, SyntaxError):
-            print('error: template data is invalid', file=sys.stderr)
-            sys.exit(1)
-
-        # merge the template data
-        tmpl = {**tmpl, **tmpl_tmp}
-
-    # appy the template
-    obj = string.Template(def_data)
-    def_data = obj.substitute(tmpl)
-
-    # load the JSON data
-    try:
-        def_data = json.loads(def_data)
-    except json.JSONDecodeError as ex:
-        print('error: definition file is invalid', file=sys.stderr)
-        sys.exit(1)
+    # get the job definition file and apply the template
+    def_data = _get_def(args.def_file, tmpl_data)
 
     # extract data
     tag = def_data["tag"]
