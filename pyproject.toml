@@ -1,12 +1,62 @@
-# Configuration file for bootstraping the package.
-# The detailed configuration is located "setup.cfg".
+# Configuration file for creating the package.
 #
 # Thomas Guillod - Dartmouth College
 
 [build-system]
 build-backend = "setuptools.build_meta"
-requires = ["setuptools", "wheel", "setuptools_scm"]
+requires = [
+    "setuptools>68.2",
+    "wheel>0.41",
+    "setuptools_scm>7.1",
+]
 
 [tool.setuptools_scm]
 write_to = "slurmgen/version.txt"
 version_scheme = "guess-next-dev"
+
+[project]
+name = "slurmgen"
+description = "SlurmGen - Simple Slurm Manager"
+license = {text = "BSD-2-Clause"}
+authors = [{name = "Thomas Guillod", email = "guillod@otvam.ch"}]
+maintainers = [{name = "Thomas Guillod", email = "guillod@otvam.ch"}]
+keywords = [
+    "Python",
+    "Slurm",
+    "HPC",
+    "Cluster",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: BSD License",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering",
+    "Natural Language :: English",
+    "Environment :: Console",
+]
+requires-python = ">=3.6"
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/otvam/slurmgen"
+Repository = "https://github.com/otvam/slurmgen"
+Releases = "https://github.com/otvam/slurmgen/releases"
+Issues = "https://github.com/otvam/slurmgen/issues"
+Tags = "https://github.com/otvam/slurmgen/tags"
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown"
+
+[project.scripts]
+sgen = "slurmgen.script:run_script"
+
+[tool.setuptools]
+packages = ["slurmgen"]
+license-files = ["LICENSE.txt"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+slurmgen = ["*.txt"]
