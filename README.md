@@ -32,7 +32,7 @@ An example is located in the `example` folder of the repository:
 
 ```bash
 # Create a Slurm script with a command line template.
-sgen job_def.json --tmpl_data "{'title': 'test', 'var': 'Welcome to everyone!'}"
+sgen job_def.json --tmpl_str "{'title': 'test', 'var': 'Welcome to everyone'}"
 
 # Create a Slurm script with a JSON file template.
 sgen job_def.json --tmpl_file job_tmpl.json
