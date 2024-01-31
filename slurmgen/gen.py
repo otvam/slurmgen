@@ -244,7 +244,7 @@ def run_data(tag, overwrite, folder, pragmas, vars, commands):
         except FileNotFoundError:
             pass
         try:
-            os.mkdir(folder_output)
+            os.makedirs(folder_output)
         except FileExistsError:
             pass
 
