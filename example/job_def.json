@@ -1,5 +1,5 @@
 {
-    "tag": "$title",
+    "tag": $title,
     "control": {
         "overwrite": true,
         "cluster": false,
@@ -18,7 +18,7 @@
     },
     "vars": {
         "PYTHONUNBUFFERED": "1",
-        "VARWORLD": "$var"
+        "VARWORLD": $var
     },
     "commands": [
         {

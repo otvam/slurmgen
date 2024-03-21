@@ -183,6 +183,10 @@ def _get_def(def_file, tmpl_data):
         print("error: definition file not found", file=sys.stderr)
         sys.exit(1)
 
+    # parse template
+    for tag, val in tmpl_data.items():
+        tmpl_data[tag] = json.dumps(val)
+
     # appy the template
     try:
         obj = string.Template(data_raw)
