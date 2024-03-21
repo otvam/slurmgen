@@ -34,7 +34,7 @@
         {
             "tag": "goodbye",
             "executable": "python3",
-            "arguments": ["run_slurm.py", "goodbye" ,"goodbye world!"]
+            "arguments": ["run_slurm.py", "goodbye", "goodbye world!"]
         }
     ]
 }
