@@ -61,14 +61,14 @@ def _write_header(fid, tag, filename_log, pragmas):
 
     fid.write('#!/bin/bash\n')
     fid.write('\n')
-    fid.write('# ############### init exit code\n')
-    fid.write('ret=0\n')
-    fid.write('\n')
     fid.write('# ############### define Slurm commands\n')
     fid.write('#SBATCH --job-name="%s"\n' % tag)
     fid.write('#SBATCH --output="%s"\n' % filename_log)
     for tag, val in pragmas.items():
         fid.write('#SBATCH --%s="%s"\n' % (tag, val))
+    fid.write('\n')
+    fid.write('# ############### init exit code\n')
+    fid.write('ret=0\n')
     fid.write('\n')
 
 

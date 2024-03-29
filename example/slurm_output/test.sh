@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# ############### init exit code
-ret=0
-
 # ############### define Slurm commands
 #SBATCH --job-name="test"
 #SBATCH --output="slurm_output/test.log"
@@ -10,6 +7,9 @@ ret=0
 #SBATCH --nodes="1"
 #SBATCH --ntasks-per-node="2"
 #SBATCH --mem="8G"
+
+# ############### init exit code
+ret=0
 
 echo "================================== test - `date -u +"%D %H:%M:%S"`"
 
@@ -19,7 +19,7 @@ echo "LOG FILE     : slurm_output/test.log"
 echo "SCRIPT FILE  : slurm_output/test.sh"
 
 echo "==================== TIME"
-echo "DATE GEN     : 03/29/24 20:57:38"
+echo "DATE GEN     : 03/29/24 21:08:38"
 echo "DATE RUN     : `date -u +"%D %H:%M:%S"`"
 
 echo "==================== SLURM"
