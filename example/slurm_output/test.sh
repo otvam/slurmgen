@@ -19,7 +19,7 @@ echo "LOG FILE     : slurm_output/test.log"
 echo "SCRIPT FILE  : slurm_output/test.sh"
 
 echo "==================== TIME"
-echo "DATE GEN     : 03/29/24 21:08:38"
+echo "DATE GEN     : 03/29/24 21:28:31"
 echo "DATE RUN     : `date -u +"%D %H:%M:%S"`"
 
 echo "==================== SLURM"
@@ -45,4 +45,5 @@ ret=$(( ret || $? ))
 
 echo "================================== test - `date -u +"%D %H:%M:%S"`"
 
+# ############### exit with status
 exit $ret

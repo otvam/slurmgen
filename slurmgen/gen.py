@@ -205,6 +205,7 @@ def _generate_file(tag, filename_script, filename_log, pragmas, vars, commands):
         _write_title(fid, tag)
 
         # end script footer
+        fid.write('# ############### exit with status\n')
         fid.write('exit $ret\n')
         
 
