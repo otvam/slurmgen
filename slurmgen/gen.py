@@ -61,6 +61,10 @@ def _write_header(fid, tag, filename_log, pragmas):
 
     fid.write('#!/bin/bash\n')
     fid.write('\n')
+    fid.write('# ############### init exit code\n')
+    fid.write('ret=0\n')
+    fid.write('\n')
+    fid.write('# ############### define Slurm commands\n')
     fid.write('#SBATCH --job-name="%s"\n' % tag)
     fid.write('#SBATCH --output="%s"\n' % filename_log)
     for tag, val in pragmas.items():
@@ -154,6 +158,9 @@ def _write_commands(fid, commands):
             fid.write('%s %s\n' % (executable, arg_all))
         else:
             fid.write('%s\n' % executable)
+
+        # update status
+        fid.write('ret=$(( ret || $? ))\n')
         fid.write('\n')
 
 
@@ -198,7 +205,7 @@ def _generate_file(tag, filename_script, filename_log, pragmas, vars, commands):
         _write_title(fid, tag)
 
         # end script footer
-        fid.write('exit 0\n')
+        fid.write('exit $ret\n')
         
 
 def run_data(tag, overwrite, folder, pragmas, vars, commands):

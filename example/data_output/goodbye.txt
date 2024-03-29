@@ -1,2 +1,2 @@
 ARGUMENT = goodbye world!
-VARWORLD = Welcome to everyone!
+VARWORLD = Welcome to everyone
