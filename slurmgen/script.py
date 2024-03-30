@@ -202,6 +202,12 @@ def _get_def(def_file, tmpl_data):
         print("error: definition file not found", file=sys.stderr)
         sys.exit(1)
 
+    # show template content
+    if tmpl_data:
+        print("info: template content")
+        for tag, val in tmpl_data.items():
+            print("info: var: \"%s\" : \"%s\"" % (tag, val))
+
     # appy the template
     try:
         obj = string.Template(data_raw)
