@@ -141,6 +141,11 @@ def _get_template(tmpl_file, tmpl_str):
             print("error: template file is invalid: %s" % str(ex), file=sys.stderr)
             sys.exit(1)
 
+        # check type
+        if type(tmpl_tmp) is not dict:
+            print("error: template file should contain a dict", file=sys.stderr)
+            sys.exit(1)
+
         # merge the template data
         tmpl_data = {**tmpl_data, **tmpl_tmp}
 
@@ -152,8 +157,22 @@ def _get_template(tmpl_file, tmpl_str):
             print("error: template data is invalid", file=sys.stderr)
             sys.exit(1)
 
+        # check type
+        if type(tmpl_tmp) is not dict:
+            print("error: template data should contain a dict", file=sys.stderr)
+            sys.exit(1)
+
         # merge the template data
         tmpl_data = {**tmpl_data, **tmpl_tmp}
+
+    # check template
+    for tag, val in tmpl_data.items():
+        if type(tag) != str:
+            print("error: template substitution should be strings", file=sys.stderr)
+            sys.exit(1)
+        if type(val) != str:
+            print("error: template substitution should be strings", file=sys.stderr)
+            sys.exit(1)
 
     return tmpl_data
 
@@ -182,10 +201,6 @@ def _get_def(def_file, tmpl_data):
     except OSError:
         print("error: definition file not found", file=sys.stderr)
         sys.exit(1)
-
-    # parse template
-    for tag, val in tmpl_data.items():
-        tmpl_data[tag] = json.dumps(val)
 
     # appy the template
     try:
