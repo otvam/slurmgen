@@ -199,9 +199,9 @@ def _get_def(def_file, tmpl_data):
     if tmpl_data:
         print("info: template content")
         for tag, val in tmpl_data.items():
-            print("info: var: \"%s\" : \"%s\"" % (tag, val))
+            print("info: var: \"%s\" => \"%s\"" % (tag, val))
 
-    # appy the template
+    # apply the template
     try:
         obj = string.Template(data_raw)
         def_data = obj.substitute(tmpl_data)
