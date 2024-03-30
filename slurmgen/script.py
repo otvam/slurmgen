@@ -12,7 +12,6 @@ __license__ = "BSD License"
 
 import sys
 import json
-import ast
 import string
 import argparse
 from slurmgen import gen
@@ -53,9 +52,10 @@ def _get_parser():
     )
     parser.add_argument(
         "-td", "--tmpl_str",
-        help="Dictionary with template data",
-        action="store",
+        help="Key / value with template data",
+        action="append",
         dest="tmpl_str",
+        nargs=2,
     )
 
     # add run options
@@ -151,16 +151,9 @@ def _get_template(tmpl_file, tmpl_str):
 
     # load the template file
     if tmpl_str is not None:
-        try:
-            tmpl_tmp = ast.literal_eval(tmpl_str)
-        except (ValueError, TypeError, SyntaxError):
-            print("error: template data is invalid", file=sys.stderr)
-            sys.exit(1)
-
-        # check type
-        if type(tmpl_tmp) is not dict:
-            print("error: template data should contain a dict", file=sys.stderr)
-            sys.exit(1)
+        tmpl_tmp = {}
+        for tag, val in tmpl_str:
+            tmpl_tmp[tag] = val
 
         # merge the template data
         tmpl_data = {**tmpl_data, **tmpl_tmp}
