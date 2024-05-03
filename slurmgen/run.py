@@ -12,7 +12,7 @@ import os.path
 import subprocess
 
 
-def _run_cmd_raw(command, env):
+def _run_cmd_raw(command, env, directory):
     """
     Run a Slurm script.
 
@@ -22,8 +22,8 @@ def _run_cmd_raw(command, env):
         Command to be executed.
     env : dict
         Dictionary with the environment variables.
-    write_log : bool
-        Write (or not) the output in a log file.
+    directory : string
+        Change the working directory.
     """
 
     # run the command
@@ -31,6 +31,7 @@ def _run_cmd_raw(command, env):
         process = subprocess.run(
             command,
             env=env,
+            cwd=directory,
         )
     except OSError as ex:
         print("error: command not found", file=sys.stderr)
@@ -44,7 +45,7 @@ def _run_cmd_raw(command, env):
         raise RuntimeError("invalid process")
 
 
-def _run_cmd_log(command, filename_log, env):
+def _run_cmd_log(command, filename_log, env, directory):
     """
     Run a Slurm script.
 
@@ -56,6 +57,8 @@ def _run_cmd_log(command, filename_log, env):
         Path of the log file created by during the Slurm job.
     env : dict
         Dictionary with the environment variables.
+    directory : string
+        Change the working directory.
     """
 
     # run the command
@@ -64,6 +67,7 @@ def _run_cmd_log(command, filename_log, env):
             process = subprocess.run(
                 command,
                 env=env,
+                cwd=directory,
                 stderr=fid,
                 stdout=fid,
             )
@@ -79,7 +83,7 @@ def _run_cmd_log(command, filename_log, env):
         raise RuntimeError("invalid process")
 
 
-def run_data(filename_script, filename_log, local, cluster, dir):
+def run_data(filename_script, filename_log, local, cluster, directory):
     """
     Run a Slurm script.
 
@@ -93,17 +97,13 @@ def run_data(filename_script, filename_log, local, cluster, dir):
         Run (or not) the job locally.
     cluster : bool
         Run (or not) the job on the cluster.
-    dir : string
+    directory : string
         Change the working directory.
     """
 
     # make the script executable
     st = os.stat(filename_script)
     os.chmod(filename_script, st.st_mode | stat.S_IEXEC)
-
-    # change directory
-    if dir is not None:
-        os.chdir(dir)
 
     # submit Slurm job
     if cluster:
@@ -116,7 +116,7 @@ def run_data(filename_script, filename_log, local, cluster, dir):
         command = ["sbatch", filename_script]
 
         # run
-        _run_cmd_raw(command, env)
+        _run_cmd_raw(command, env, directory)
 
     # run locally
     if local:
@@ -132,4 +132,4 @@ def run_data(filename_script, filename_log, local, cluster, dir):
         command = [filename_script]
 
         # run
-        _run_cmd_log(command, filename_log, env)
+        _run_cmd_log(command, filename_log, env, directory)

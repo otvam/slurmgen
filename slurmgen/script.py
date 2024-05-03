@@ -72,10 +72,10 @@ def _get_parser():
         dest="cluster",
     )
     parser.add_argument(
-        "-d", "--dir",
+        "-d", "--directory",
         help="Change the working directory",
         action="store",
-        dest="dir",
+        dest="directory",
     )
 
     return parser
@@ -196,7 +196,7 @@ def _get_def(def_file, tmpl_data):
     return def_data
 
 
-def run_args(def_file, tmpl_file=None, tmpl_str=None, local=False, cluster=False, dir=None):
+def run_args(def_file, tmpl_file=None, tmpl_str=None, local=False, cluster=False, directory=None):
     """
     Run the script with arguments.
 
@@ -212,7 +212,7 @@ def run_args(def_file, tmpl_file=None, tmpl_str=None, local=False, cluster=False
         Run (or not) the job locally.
     cluster : bool
         Run (or not) the job on the cluster.
-    dir : string
+    directory : string
         Change the working directory.
     """
 
@@ -234,7 +234,7 @@ def run_args(def_file, tmpl_file=None, tmpl_str=None, local=False, cluster=False
     (filename_script, filename_log) = gen.run_data(tag, overwrite, folder, pragmas, vars, commands)
 
     # run the Slurm script
-    run.run_data(filename_script, filename_log, local, cluster, dir)
+    run.run_data(filename_script, filename_log, local, cluster, directory)
 
 
 def run_script():
@@ -250,7 +250,7 @@ def run_script():
         - Run options
             - "-l" or "--local" Run the job locally for debugging.
             - "-c" or "--cluster" Run the job on the Slurm cluster.
-            - "-d" or "--dir" Change the working directory.
+            - "-d" or "--directory" Change the working directory.
     """
 
     # get argument parser
@@ -267,7 +267,7 @@ def run_script():
             tmpl_str=args.tmpl_str,
             local=args.local,
             cluster=args.cluster,
-            dir=args.dir,
+            directory=args.directory,
         )
     except Exception:
         sys.exit(1)
