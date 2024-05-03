@@ -112,8 +112,8 @@ def _get_template(tmpl_file, tmpl_str):
     ----------
     tmpl_file : string
         String with a JSON file containing template data.
-    tmpl_str : string
-        String with a Python dictionary containing template data.
+    tmpl_str : list
+        List with keys/values containing template data.
 
     Returns
     -------
