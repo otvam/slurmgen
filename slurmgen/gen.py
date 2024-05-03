@@ -51,13 +51,13 @@ def _write_header(fid, tag, filename_log, pragmas):
     # check pragmas
     if "job-name" in pragmas:
         print("error: job name is already set by the script", file=sys.stderr)
-        sys.exit(1)
+        raise ValueError("invalid data")
     if "output" in pragmas:
         print("error: job log is already set by the script", file=sys.stderr)
-        sys.exit(1)
+        raise ValueError("invalid data")
     if "error" in pragmas:
         print("error: job log is already set by the script", file=sys.stderr)
-        sys.exit(1)
+        raise ValueError("invalid data")
 
     fid.write('#!/bin/bash\n')
     fid.write('\n')
@@ -262,13 +262,13 @@ def run_data(tag, overwrite, folder, pragmas, vars, commands):
     print("info: check files")
     if os.path.isfile(filename_script):
         print("error: Slurm file already exists", file=sys.stderr)
-        sys.exit(1)
+        raise RuntimeError("invalid data")
     if os.path.isfile(filename_log):
         print("error: log file already exists", file=sys.stderr)
-        sys.exit(1)
+        raise RuntimeError("invalid data")
     if not os.path.isdir(folder_output):
         print("error: output folder does not exist", file=sys.stderr)
-        sys.exit(1)
+        raise RuntimeError("invalid data")
 
     # remove folders
     print("info: remove folders")

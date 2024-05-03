@@ -32,16 +32,16 @@ def _run_cmd_raw(command, env):
             command,
             env=env,
         )
-    except OSError:
+    except OSError as ex:
         print("error: command not found", file=sys.stderr)
-        sys.exit(1)
+        raise ex
 
     # check return code
     if process.returncode == 0:
         print("info: valid return code")
     else:
         print("error: invalid return code", file=sys.stderr)
-        sys.exit(process.returncode)
+        raise RuntimeError("invalid process")
 
 
 def _run_cmd_log(command, filename_log, env):
@@ -67,16 +67,16 @@ def _run_cmd_log(command, filename_log, env):
                 stderr=fid,
                 stdout=fid,
             )
-    except OSError:
+    except OSError as ex:
         print("error: command not found", file=sys.stderr)
-        sys.exit(1)
+        raise ex
 
     # check return code
     if process.returncode == 0:
         print("info: valid return code")
     else:
         print("error: invalid return code", file=sys.stderr)
-        sys.exit(process.returncode)
+        raise RuntimeError("invalid process")
 
 
 def run_data(filename_script, filename_log, local, cluster, dir):

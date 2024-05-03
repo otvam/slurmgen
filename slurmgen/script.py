@@ -107,21 +107,21 @@ def _get_template(tmpl_file, tmpl_str):
         try:
             with open(tmpl_file, "r") as fid:
                 data_raw = fid.read()
-        except OSError:
+        except OSError as ex:
             print("error: template file not found", file=sys.stderr)
-            sys.exit(1)
+            raise ex
 
         # parse the template data
         try:
             tmpl_tmp = json.loads(data_raw)
         except json.JSONDecodeError as ex:
             print("error: template file is invalid: %s" % str(ex), file=sys.stderr)
-            sys.exit(1)
+            raise ex
 
         # check type
         if type(tmpl_tmp) is not dict:
             print("error: template file should contain a dict", file=sys.stderr)
-            sys.exit(1)
+            raise ValueError("invalid data")
 
         # merge the template data
         tmpl_data = {**tmpl_data, **tmpl_tmp}
@@ -139,10 +139,10 @@ def _get_template(tmpl_file, tmpl_str):
     for tag, val in tmpl_data.items():
         if type(tag) != str:
             print("error: template substitution should be strings", file=sys.stderr)
-            sys.exit(1)
+            raise ValueError("invalid data")
         if type(val) != str:
             print("error: template substitution should be strings", file=sys.stderr)
-            sys.exit(1)
+            raise ValueError("invalid data")
 
     return tmpl_data
 
@@ -168,9 +168,9 @@ def _get_def(def_file, tmpl_data):
     try:
         with open(def_file, "r") as fid:
             data_raw = fid.read()
-    except OSError:
+    except OSError as ex:
         print("error: definition file not found", file=sys.stderr)
-        sys.exit(1)
+        raise ex
 
     # show template content
     if tmpl_data:
@@ -184,14 +184,14 @@ def _get_def(def_file, tmpl_data):
         def_data = obj.substitute(tmpl_data)
     except (ValueError, KeyError) as ex:
         print("error: template parsing error: %s" % str(ex), file=sys.stderr)
-        sys.exit(1)
+        raise ex
 
     # load the JSON data
     try:
         def_data = json.loads(def_data)
     except json.JSONDecodeError as ex:
         print("error: definition file is invalid: %s" % str(ex), file=sys.stderr)
-        sys.exit(1)
+        raise ex
 
     return def_data
 
@@ -260,14 +260,17 @@ def run_script():
     args = parser.parse_args()
 
     # run
-    run_args(
-        args.def_file,
-        tmpl_file=args.tmpl_file,
-        tmpl_str=args.tmpl_str,
-        local=args.local,
-        cluster=args.cluster,
-        dir=args.dir,
-    )
+    try:
+        run_args(
+            args.def_file,
+            tmpl_file=args.tmpl_file,
+            tmpl_str=args.tmpl_str,
+            local=args.local,
+            cluster=args.cluster,
+            dir=args.dir,
+        )
+    except Exception:
+        sys.exit(1)
 
     # return
     sys.exit(0)
