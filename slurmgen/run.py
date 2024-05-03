@@ -79,7 +79,7 @@ def _run_cmd_log(command, filename_log, env):
         sys.exit(process.returncode)
 
 
-def run_data(filename_script, filename_log, local, cluster):
+def run_data(filename_script, filename_log, local, cluster, dir):
     """
     Run a Slurm script.
 
@@ -93,11 +93,17 @@ def run_data(filename_script, filename_log, local, cluster):
         Run (or not) the job locally.
     cluster : bool
         Run (or not) the job on the cluster.
+    dir : string
+        Change the working directory.
     """
 
     # make the script executable
     st = os.stat(filename_script)
     os.chmod(filename_script, st.st_mode | stat.S_IEXEC)
+
+    # change directory
+    if dir is not None:
+        os.chdir(dir)
 
     # submit Slurm job
     if cluster:
