@@ -1,11 +1,11 @@
-================================== test - 03/30/24 02:45:48
+================================== test - 05/03/24 05:39:40
 ==================== PARAM
 JOB TAG      : test
 LOG FILE     : slurm_output/test.log
 SCRIPT FILE  : slurm_output/test.sh
 ==================== TIME
-DATE GEN     : 03/30/24 02:45:48
-DATE RUN     : 03/30/24 02:45:48
+DATE GEN     : 05/03/24 05:39:40
+DATE RUN     : 05/03/24 05:39:40
 ==================== SLURM
 JOB ID       : NOT SLURM
 JOB NAME     : NOT SLURM
@@ -23,4 +23,4 @@ enter script
     ARGUMENT = goodbye world!
     VARWORLD = Welcome to everyone
 exit script
-================================== test - 03/30/24 02:45:48
+================================== test - 05/03/24 05:39:40

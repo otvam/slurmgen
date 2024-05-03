@@ -1,10 +1,6 @@
 {
     "tag": "$title",
-    "control": {
-        "overwrite": true,
-        "cluster": false,
-        "local": false
-    },
+    "overwrite": true,
     "folder": {
         "folder_output": "slurm_output",
         "folder_delete": ["data_output"],

@@ -71,35 +71,6 @@ def _get_parser():
         action="store_true",
         dest="cluster",
     )
-    parser.add_argument(
-        "-o", "--overwrite",
-        help="Overwrite existing files",
-        action="store_true",
-        dest="cluster",
-    )
-    parser.add_argument(
-        "-t", "--tag",
-        help="Overwrite the job name",
-        action="store",
-        dest="tag",
-        default=None,
-    )
-
-    # add dependency options
-    parser.add_argument(
-        "-ok", "--afterok",
-        help="Run after successful dependency",
-        action="store",
-        dest="afterok",
-        default=None,
-    )
-    parser.add_argument(
-        "-any", "--afterany",
-        help="Run after terminated dependency",
-        action="store",
-        dest="afterany",
-        default=None,
-    )
 
     return parser
 
@@ -219,6 +190,45 @@ def _get_def(def_file, tmpl_data):
     return def_data
 
 
+def run_args(def_file, tmpl_file=None, tmpl_str=None, local=False, cluster=False):
+    """
+    Run the script with arguments.
+
+    Parameters
+    ----------
+    def_file : string
+        String with a JSON file containing the job definition data.
+    tmpl_file : string
+        String with a JSON file containing template data.
+    tmpl_str : list
+        List with keys/values containing template data.
+    local : bool
+        Run (or not) the job locally.
+    cluster : bool
+        Run (or not) the job on the cluster.
+    """
+
+    # get template data
+    tmpl_data = _get_template(tmpl_file, tmpl_str)
+
+    # get the job definition file and apply the template
+    def_data = _get_def(def_file, tmpl_data)
+
+    # extract data
+    tag = def_data["tag"]
+    overwrite = def_data["overwrite"]
+    folder = def_data["folder"]
+    pragmas = def_data["pragmas"]
+    vars = def_data["vars"]
+    commands = def_data["commands"]
+
+    # create the Slurm script
+    (filename_script, filename_log) = gen.run_data(tag, overwrite, folder, pragmas, vars, commands)
+
+    # run the Slurm script
+    run.run_data(filename_script, filename_log, local, cluster)
+
+
 def run_script():
     """
     Entry point for the command line script.
@@ -232,11 +242,6 @@ def run_script():
         - Run options
             - "-l" or "--local" Run the job locally for debugging.
             - "-c" or "--cluster" Run the job on the Slurm cluster.
-            - "-o" or "--overwrite" Overwrite existing files.
-            - "-t" or "--tag" Overwrite the job name.
-        - Dependency options
-            - "-ok" or "--afterok" Run after successful dependency.
-            - "-any" or "--afterany" Run after terminated dependency.
     """
 
     # get argument parser
@@ -245,38 +250,14 @@ def run_script():
     # parse the arguments
     args = parser.parse_args()
 
-    # get template data
-    tmpl_data = _get_template(args.tmpl_file, args.tmpl_str)
-
-    # get the job definition file and apply the template
-    def_data = _get_def(args.def_file, tmpl_data)
-
-    # extract data
-    tag = def_data["tag"]
-    control = def_data["control"]
-    folder = def_data["folder"]
-    pragmas = def_data["pragmas"]
-    vars = def_data["vars"]
-    commands = def_data["commands"]
-
-    # replace tag
-    if args.tag is not None:
-        tag = args.tag
-
-    # find control
-    cluster = control["cluster"] or args.cluster
-    local = control["local"] or args.local
-    overwrite = control["overwrite"] or args.overwrite
-
-    # dependency options
-    afterok = args.afterok
-    afterany = args.afterany
-
-    # create the Slurm script
-    (filename_script, filename_log) = gen.run_data(tag, overwrite, folder, pragmas, vars, commands)
-
-    # run the Slurm script
-    run.run_data(filename_script, filename_log, local, cluster, afterok, afterany)
+    # run
+    run_args(
+        args.def_file,
+        tmpl_file=args.tmpl_file,
+        tmpl_str=args.tmpl_str,
+        local=args.local,
+        cluster=args.cluster,
+    )
 
     # return
     sys.exit(0)
