@@ -12,7 +12,7 @@ import os.path
 import subprocess
 
 
-def _run_cmd_raw(command, env, directory):
+def _run_cmd_raw(command, env):
     """
     Run a Slurm script.
 
@@ -22,8 +22,6 @@ def _run_cmd_raw(command, env, directory):
         Command to be executed.
     env : dict
         Dictionary with the environment variables.
-    directory : string
-        Change the working directory.
     """
 
     # run the command
@@ -31,7 +29,6 @@ def _run_cmd_raw(command, env, directory):
         process = subprocess.run(
             command,
             env=env,
-            cwd=directory,
         )
     except OSError as ex:
         print("error: command not found", file=sys.stderr)
@@ -45,7 +42,7 @@ def _run_cmd_raw(command, env, directory):
         raise RuntimeError("invalid process")
 
 
-def _run_cmd_log(command, filename_log, env, directory):
+def _run_cmd_log(command, filename_log, env):
     """
     Run a Slurm script.
 
@@ -57,8 +54,6 @@ def _run_cmd_log(command, filename_log, env, directory):
         Path of the log file created by during the Slurm job.
     env : dict
         Dictionary with the environment variables.
-    directory : string
-        Change the working directory.
     """
 
     # run the command
@@ -67,7 +62,6 @@ def _run_cmd_log(command, filename_log, env, directory):
             process = subprocess.run(
                 command,
                 env=env,
-                cwd=directory,
                 stderr=fid,
                 stdout=fid,
             )
@@ -83,7 +77,7 @@ def _run_cmd_log(command, filename_log, env, directory):
         raise RuntimeError("invalid process")
 
 
-def run_data(filename_script, filename_log, local, cluster, directory):
+def run_data(filename_script, filename_log, local, cluster):
     """
     Run a Slurm script.
 
@@ -97,8 +91,6 @@ def run_data(filename_script, filename_log, local, cluster, directory):
         Run (or not) the job locally.
     cluster : bool
         Run (or not) the job on the cluster.
-    directory : string
-        Change the working directory.
     """
 
     # make the script executable
@@ -116,7 +108,7 @@ def run_data(filename_script, filename_log, local, cluster, directory):
         command = ["sbatch", filename_script]
 
         # run
-        _run_cmd_raw(command, env, directory)
+        _run_cmd_raw(command, env)
 
     # run locally
     if local:
@@ -132,4 +124,4 @@ def run_data(filename_script, filename_log, local, cluster, directory):
         command = [filename_script]
 
         # run
-        _run_cmd_log(command, filename_log, env, directory)
+        _run_cmd_log(command, filename_log, env)

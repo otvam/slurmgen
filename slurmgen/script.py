@@ -10,6 +10,7 @@ __copyright__ = "Thomas Guillod - Dartmouth College"
 __license__ = "BSD License"
 
 
+import os
 import sys
 import json
 import string
@@ -216,25 +217,35 @@ def run_args(def_file, tmpl_file=None, tmpl_str=None, local=False, cluster=False
         Change the working directory.
     """
 
+    # save working directory
+    cwd = os.getcwd()
+
     # get template data
-    tmpl_data = _get_template(tmpl_file, tmpl_str)
+    try:
+        # change working directory
+        os.chdir(directory)
 
-    # get the job definition file and apply the template
-    def_data = _get_def(def_file, tmpl_data)
+        tmpl_data = _get_template(tmpl_file, tmpl_str)
 
-    # extract data
-    tag = def_data["tag"]
-    overwrite = def_data["overwrite"]
-    folder = def_data["folder"]
-    pragmas = def_data["pragmas"]
-    vars = def_data["vars"]
-    commands = def_data["commands"]
+        # get the job definition file and apply the template
+        def_data = _get_def(def_file, tmpl_data)
 
-    # create the Slurm script
-    (filename_script, filename_log) = gen.run_data(tag, overwrite, folder, pragmas, vars, commands)
+        # extract data
+        tag = def_data["tag"]
+        overwrite = def_data["overwrite"]
+        folder = def_data["folder"]
+        pragmas = def_data["pragmas"]
+        vars = def_data["vars"]
+        commands = def_data["commands"]
 
-    # run the Slurm script
-    run.run_data(filename_script, filename_log, local, cluster, directory)
+        # create the Slurm script
+        (filename_script, filename_log) = gen.run_data(tag, overwrite, folder, pragmas, vars, commands)
+
+        # run the Slurm script
+        run.run_data(filename_script, filename_log, local, cluster)
+    finally:
+        os.chdir(cwd)
+
 
 
 def run_script():
