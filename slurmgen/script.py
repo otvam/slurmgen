@@ -261,7 +261,3 @@ def run_script():
 
     # return
     sys.exit(0)
-
-
-if __name__ == "__main__":
-    run_script()

@@ -51,7 +51,7 @@ file = "README.md"
 content-type = "text/markdown"
 
 [project.scripts]
-sgen = "slurmgen.script:run_script"
+sgen = "slurmgen:run_script"
 
 [tool.setuptools]
 packages = ["slurmgen"]
