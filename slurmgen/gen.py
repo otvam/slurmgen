@@ -65,7 +65,8 @@ def _write_header(fid, tag, filename_log, pragmas):
     fid.write('#SBATCH --job-name="%s"\n' % tag)
     fid.write('#SBATCH --output="%s"\n' % filename_log)
     for tag, val in pragmas.items():
-        fid.write('#SBATCH --%s="%s"\n' % (tag, val))
+        if (tag is not None) and (val is not None):
+            fid.write('#SBATCH --%s="%s"\n' % (tag, val))
     fid.write('\n')
     fid.write('# ############### init exit code\n')
     fid.write('ret=0\n')
@@ -127,8 +128,9 @@ def _write_vars(fid, var):
 
     if var:
         fid.write('echo "==================== ENV VAR"\n')
-        for var, value in var.items():
-            fid.write('export %s="%s"\n' % (var, value))
+        for var, val in var.items():
+            if (var is not None) and (val is not None):
+                fid.write('export %s="%s"\n' % (var, val))
         fid.write('\n')
 
 
