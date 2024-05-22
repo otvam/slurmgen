@@ -114,7 +114,7 @@ def _write_summary(fid, tag, filename_script, filename_log):
     fid.write('\n')
 
 
-def _write_vars(fid, var):
+def _write_envs(fid, envs):
     """
     Handling of the folders and the environment variables.
 
@@ -122,13 +122,13 @@ def _write_vars(fid, var):
     ----------
     fid : file
         File descriptor for the script.
-    vars : dict
+    envs : dict
         Dictionary of environment variable to be set and exported.
     """
 
-    if var:
+    if envs:
         fid.write('echo "==================== ENV VAR"\n')
-        for var, val in var.items():
+        for var, val in envs.items():
             if (var is not None) and (val is not None):
                 fid.write('export %s="%s"\n' % (var, val))
         fid.write('\n')
@@ -166,7 +166,7 @@ def _write_commands(fid, commands):
         fid.write('\n')
 
 
-def _generate_file(tag, filename_script, filename_log, pragmas, vars, commands):
+def _generate_file(tag, filename_script, filename_log, pragmas, envs, commands):
     """
     Generate and write a Slurm script or a Shell script.
 
@@ -180,7 +180,7 @@ def _generate_file(tag, filename_script, filename_log, pragmas, vars, commands):
         Path of the log file created by during the Slurm job.
     pragmas : dict
         Dictionary with the pragmas controlling the Slurm job.
-    vars : dict
+    envs : dict
         Dictionary of environment variable to be set and exported.
     commands : list
         List of commands to be executed by the job.
@@ -198,7 +198,7 @@ def _generate_file(tag, filename_script, filename_log, pragmas, vars, commands):
         _write_summary(fid, tag, filename_script, filename_log)
 
         # write environment variables
-        _write_vars(fid, vars)
+        _write_envs(fid, envs)
 
         # write the commands to be executed
         _write_commands(fid, commands)
@@ -211,7 +211,7 @@ def _generate_file(tag, filename_script, filename_log, pragmas, vars, commands):
         fid.write('exit $ret\n')
         
 
-def run_data(tag, overwrite, folder, pragmas, vars, commands):
+def run_data(tag, overwrite, folder, pragmas, envs, commands):
     """
     Generate a Slurm script.
 
@@ -219,7 +219,7 @@ def run_data(tag, overwrite, folder, pragmas, vars, commands):
     ----------
     tag : string
         Name of the job to be created.
-    tag : bool
+    overwrite : bool
         Switch controlling if previous script and log should be replaced.
     folder : dict
         Name of the output folder for the script and log files.
@@ -227,7 +227,7 @@ def run_data(tag, overwrite, folder, pragmas, vars, commands):
         Name of the folders that should be created at the start of the job.
     pragmas : dict
         Dictionary with the pragmas controlling the Slurm job.
-    vars : dict
+    vaenvsrs : dict
         Dictionary of environment variable to be set and exported.
     commands : list
         List of commands to be executed by the job.
@@ -287,6 +287,6 @@ def run_data(tag, overwrite, folder, pragmas, vars, commands):
 
     # create the script
     print("info: generate Slurm file")
-    _generate_file(tag, filename_script, filename_log, pragmas, vars, commands)
+    _generate_file(tag, filename_script, filename_log, pragmas, envs, commands)
 
     return filename_script, filename_log

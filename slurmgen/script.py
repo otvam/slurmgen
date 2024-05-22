@@ -237,17 +237,16 @@ def run_args(def_file, tmpl_file=None, tmpl_str=None, local=False, cluster=False
         overwrite = def_data["overwrite"]
         folder = def_data["folder"]
         pragmas = def_data["pragmas"]
-        vars = def_data["vars"]
+        envs = def_data["envs"]
         commands = def_data["commands"]
 
         # create the Slurm script
-        (filename_script, filename_log) = gen.run_data(tag, overwrite, folder, pragmas, vars, commands)
+        (filename_script, filename_log) = gen.run_data(tag, overwrite, folder, pragmas, envs, commands)
 
         # run the Slurm script
         run.run_data(filename_script, filename_log, local, cluster)
     finally:
         os.chdir(cwd)
-
 
 
 def run_script():
