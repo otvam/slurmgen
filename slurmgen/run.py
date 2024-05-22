@@ -6,10 +6,10 @@ __author__ = "Thomas Guillod"
 __copyright__ = "Thomas Guillod - Dartmouth College"
 __license__ = "BSD License"
 
-import sys
 import stat
 import os.path
 import subprocess
+from slurmgen.error import SlurmGenError
 
 
 def _run_cmd_raw(command, env):
@@ -31,15 +31,13 @@ def _run_cmd_raw(command, env):
             env=env,
         )
     except OSError as ex:
-        print("error: command not found", file=sys.stderr)
-        raise ex
+        raise SlurmGenError("error: command error: %s" % str(ex))
 
     # check return code
     if process.returncode == 0:
         print("info: valid return code")
     else:
-        print("error: invalid return code", file=sys.stderr)
-        raise RuntimeError("invalid process")
+        raise SlurmGenError("error: invalid return code")
 
 
 def _run_cmd_log(command, filename_log, env):
@@ -66,15 +64,13 @@ def _run_cmd_log(command, filename_log, env):
                 stdout=fid,
             )
     except OSError as ex:
-        print("error: command not found", file=sys.stderr)
-        raise ex
+        raise SlurmGenError("error: command error: %s" % str(ex))
 
     # check return code
     if process.returncode == 0:
         print("info: valid return code")
     else:
-        print("error: invalid return code", file=sys.stderr)
-        raise RuntimeError("invalid process")
+        raise SlurmGenError("error: invalid return code")
 
 
 def run_data(filename_script, filename_log, local, cluster):

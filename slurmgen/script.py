@@ -15,8 +15,10 @@ import sys
 import json
 import string
 import argparse
+import traceback
 from slurmgen import gen
 from slurmgen import run
+from slurmgen.error import SlurmGenError
 
 
 def _get_parser():
@@ -109,20 +111,17 @@ def _get_template(tmpl_file, tmpl_str):
             with open(tmpl_file, "r") as fid:
                 data_raw = fid.read()
         except OSError as ex:
-            print("error: template file not found", file=sys.stderr)
-            raise ex
+            raise SlurmGenError("error: template file not found: %s" % str(ex))
 
         # parse the template data
         try:
             tmpl_tmp = json.loads(data_raw)
         except json.JSONDecodeError as ex:
-            print("error: template file is invalid: %s" % str(ex), file=sys.stderr)
-            raise ex
+            raise SlurmGenError("error: template file is invalid: %s" % str(ex))
 
         # check type
         if type(tmpl_tmp) is not dict:
-            print("error: template file should contain a dict", file=sys.stderr)
-            raise ValueError("invalid data")
+            raise SlurmGenError("error: template file should contain a dict")
 
         # merge the template data
         tmpl_data = {**tmpl_data, **tmpl_tmp}
@@ -139,11 +138,9 @@ def _get_template(tmpl_file, tmpl_str):
     # check template
     for tag, val in tmpl_data.items():
         if type(tag) != str:
-            print("error: template substitution should be strings", file=sys.stderr)
-            raise ValueError("invalid data")
+            raise SlurmGenError("error: template substitution should be strings")
         if type(val) != str:
-            print("error: template substitution should be strings", file=sys.stderr)
-            raise ValueError("invalid data")
+            raise SlurmGenError("error: template substitution should be strings")
 
     return tmpl_data
 
@@ -170,8 +167,7 @@ def _get_def(def_file, tmpl_data):
         with open(def_file, "r") as fid:
             data_raw = fid.read()
     except OSError as ex:
-        print("error: definition file not found", file=sys.stderr)
-        raise ex
+        raise SlurmGenError("error: definition file not found: %s" % str(ex))
 
     # show template content
     if tmpl_data:
@@ -184,15 +180,13 @@ def _get_def(def_file, tmpl_data):
         obj = string.Template(data_raw)
         def_data = obj.substitute(tmpl_data)
     except (ValueError, KeyError) as ex:
-        print("error: template parsing error: %s" % str(ex), file=sys.stderr)
-        raise ex
+        raise SlurmGenError("error: template parsing error: %s" % str(ex))
 
     # load the JSON data
     try:
         def_data = json.loads(def_data)
     except json.JSONDecodeError as ex:
-        print("error: definition file is invalid: %s" % str(ex), file=sys.stderr)
-        raise ex
+        raise SlurmGenError("error: definition file is invalid: %s" % str(ex))
 
     return def_data
 
@@ -281,7 +275,15 @@ def run_script():
             cluster=args.cluster,
             directory=args.directory,
         )
-    except Exception:
+    except SlurmGenError as ex:
+        print("error: ============== SlurmGen ==============", file=sys.stderr)
+        traceback.print_exception(ex, limit=0, chain=False)
+        print("error: ============== SlurmGen ==============", file=sys.stderr)
+        sys.exit(1)
+    except Exception as ex:
+        print("error: ============== Unknown ==============", file=sys.stderr)
+        traceback.print_exception(ex, limit=0, chain=False)
+        print("error: ============== Unknown ==============", file=sys.stderr)
         sys.exit(1)
 
     # return

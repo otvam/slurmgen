@@ -6,10 +6,10 @@ __author__ = "Thomas Guillod"
 __copyright__ = "Thomas Guillod - Dartmouth College"
 __license__ = "BSD License"
 
-import sys
 import os.path
 import shutil
 import datetime
+from slurmgen.error import SlurmGenError
 
 
 def _write_title(fid, tag):
@@ -50,14 +50,11 @@ def _write_header(fid, tag, filename_log, pragmas):
 
     # check pragmas
     if "job-name" in pragmas:
-        print("error: job name is already set by the script", file=sys.stderr)
-        raise ValueError("invalid data")
+        raise SlurmGenError("error: job name is already set by the script")
     if "output" in pragmas:
-        print("error: job log is already set by the script", file=sys.stderr)
-        raise ValueError("invalid data")
+        raise SlurmGenError("error: job log is already set by the script")
     if "error" in pragmas:
-        print("error: job log is already set by the script", file=sys.stderr)
-        raise ValueError("invalid data")
+        raise SlurmGenError("error: job log is already set by the script")
 
     fid.write('#!/bin/bash\n')
     fid.write('\n')
@@ -261,14 +258,11 @@ def run_data(tag, overwrite, folder, pragmas, envs, commands):
     # check that the output files are not existing
     print("info: check files")
     if os.path.isfile(filename_script):
-        print("error: Slurm file already exists", file=sys.stderr)
-        raise RuntimeError("invalid data")
+        raise SlurmGenError("error: Slurm file already exists")
     if os.path.isfile(filename_log):
-        print("error: log file already exists", file=sys.stderr)
-        raise RuntimeError("invalid data")
+        raise SlurmGenError("error: log file already exists")
     if not os.path.isdir(folder_output):
-        print("error: output folder does not exist", file=sys.stderr)
-        raise RuntimeError("invalid data")
+        raise SlurmGenError("error: output folder does not exist")
 
     # remove folders
     print("info: remove folders")
