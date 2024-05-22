@@ -146,17 +146,11 @@ def _write_commands(fid, commands):
     for tmp in commands:
         # extract data
         tag = tmp["tag"]
-        executable = tmp["executable"]
-        arguments = tmp["arguments"]
+        cmd = tmp["cmd"]
 
         # write command
         fid.write('echo "==================== RUN: %s"\n' % tag)
-        if arguments:
-            arg_all = ['"' + tmp + '"' for tmp in arguments]
-            arg_all = " ".join(arg_all)
-            fid.write('%s %s\n' % (executable, arg_all))
-        else:
-            fid.write('%s\n' % executable)
+        fid.write('%s\n' % cmd)
 
         # update status
         fid.write('ret=$(( ret || $? ))\n')

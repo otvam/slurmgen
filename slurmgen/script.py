@@ -277,7 +277,7 @@ def run_script():
         )
     except SlurmGenError as ex:
         print("error: ============== SlurmGen ==============", file=sys.stderr)
-        traceback.print_exception(ex, limit=0, chain=False)
+        print(str(ex), file=sys.stderr)
         print("error: ============== SlurmGen ==============", file=sys.stderr)
         sys.exit(1)
     except Exception as ex:

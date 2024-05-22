@@ -19,7 +19,7 @@ echo "LOG FILE     : slurm_output/test.log"
 echo "SCRIPT FILE  : slurm_output/test.sh"
 
 echo "==================== TIME"
-echo "DATE GEN     : 05/22/24 21:27:36"
+echo "DATE GEN     : 05/22/24 21:55:45"
 echo "DATE RUN     : `date -u +"%D %H:%M:%S"`"
 
 echo "==================== SLURM"
@@ -32,15 +32,15 @@ export PYTHONUNBUFFERED="1"
 export VARWORLD="Welcome to everyone"
 
 echo "==================== RUN: version"
-python3 "--version"
+python3 --version
 ret=$(( ret || $? ))
 
 echo "==================== RUN: hello"
-python3 "run_slurm.py" "hello" "hello world!"
+python3 run_slurm.py "hello" "hello world!"
 ret=$(( ret || $? ))
 
 echo "==================== RUN: goodbye"
-python3 "run_slurm.py" "goodbye" "goodbye world!"
+python3 run_slurm.py "goodbye" "goodbye world!"
 ret=$(( ret || $? ))
 
 echo "================================== test - `date -u +"%D %H:%M:%S"`"
