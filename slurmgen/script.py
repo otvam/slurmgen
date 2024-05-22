@@ -223,8 +223,10 @@ def run_args(def_file, tmpl_file=None, tmpl_str=None, local=False, cluster=False
     # get template data
     try:
         # change working directory
-        os.chdir(directory)
+        if directory is not None:
+            os.chdir(directory)
 
+        # get the template data
         tmpl_data = _get_template(tmpl_file, tmpl_str)
 
         # get the job definition file and apply the template
