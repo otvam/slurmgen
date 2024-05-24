@@ -77,6 +77,7 @@ def _run_cmd_log(command, filename_log, env):
             for line in process.stdout:
                 print(line.strip(), file=sys.stdout)
                 fid.write(line)
+                fid.flush()
 
         # wait return
         process.wait()
