@@ -212,15 +212,12 @@ def run_args(def_file, tmpl_file=None, tmpl_str=None, local=False, cluster=False
     try:
         # change working directory
         if directory is not None:
-            print("info: change directory", file=sys.stderr)
             os.chdir(directory)
 
         # get the template data
-        print("info: load template", file=sys.stderr)
         tmpl_data = _get_template(tmpl_file, tmpl_str)
 
         # get the job definition file and apply the template
-        print("info: apply template", file=sys.stderr)
         def_data = _get_def(def_file, tmpl_data)
 
         # extract data
@@ -259,9 +256,6 @@ def run_script():
     # get argument parser
     parser = _get_parser()
 
-    # init
-    print("info: ============== SlurmGen ==============", file=sys.stderr)
-
     # parse the arguments
     args = parser.parse_args()
 
@@ -276,9 +270,6 @@ def run_script():
             cluster=args.cluster,
             directory=args.directory,
         )
-
-        # teardown
-        print("info: ============== SlurmGen ==============", file=sys.stderr)
     except SlurmGenError as ex:
         print("error: ============== SlurmGen ==============", file=sys.stderr)
         print(str(ex), file=sys.stderr)

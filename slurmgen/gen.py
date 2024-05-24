@@ -6,7 +6,6 @@ __author__ = "Thomas Guillod"
 __copyright__ = "Thomas Guillod - Dartmouth College"
 __license__ = "BSD License"
 
-import sys
 import os.path
 import shutil
 import datetime
@@ -236,7 +235,6 @@ def run_data(tag, overwrite, folder, pragmas, envs, commands):
 
     # remove previous files (if selected)
     if overwrite:
-        print("info: remove existing files", file=sys.stderr)
         try:
             os.remove(filename_script)
         except FileNotFoundError:
@@ -251,7 +249,6 @@ def run_data(tag, overwrite, folder, pragmas, envs, commands):
             pass
 
     # check that the output files are not existing
-    print("info: check files", file=sys.stderr)
     if os.path.isfile(filename_script):
         raise SlurmGenError("error: Slurm file already exists")
     if os.path.isfile(filename_log):
@@ -260,14 +257,13 @@ def run_data(tag, overwrite, folder, pragmas, envs, commands):
         raise SlurmGenError("error: output folder does not exist")
 
     # remove folders
-    print("info: remove folders", file=sys.stderr)
     for folder in folder_delete:
         try:
             shutil.rmtree(folder)
         except FileNotFoundError:
             pass
 
-    print("info: create folders", file=sys.stderr)
+    # create folders
     for folder in folder_create:
         try:
             os.makedirs(folder)
@@ -275,7 +271,6 @@ def run_data(tag, overwrite, folder, pragmas, envs, commands):
             pass
 
     # create the script
-    print("info: generate Slurm file", file=sys.stderr)
     _generate_file(tag, filename_script, filename_log, pragmas, envs, commands)
 
     return filename_script, filename_log

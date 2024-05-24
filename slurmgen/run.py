@@ -38,14 +38,11 @@ def _run_cmd_raw(command, env):
 
         # wait return
         process.wait()
-        print("info: process is finished", file=sys.stderr)
     except OSError as ex:
         raise SlurmGenError("error: command error: %s" % str(ex))
 
     # check return code
-    if process.returncode == 0:
-        print("info: valid return code", file=sys.stderr)
-    else:
+    if process.returncode != 0:
         raise SlurmGenError("invalid return code")
 
 
@@ -83,14 +80,11 @@ def _run_cmd_log(command, filename_log, env):
 
         # wait return
         process.wait()
-        print("info: process is finished", file=sys.stderr)
     except OSError as ex:
         raise SlurmGenError("error: command error: %s" % str(ex))
 
     # check return code
-    if process.returncode == 0:
-        print("info: valid return code", file=sys.stderr)
-    else:
+    if process.returncode != 0:
         raise SlurmGenError("invalid return code")
 
 
@@ -115,9 +109,7 @@ def run_data(filename_script, filename_log, local, cluster):
     os.chmod(filename_script, st.st_mode | stat.S_IEXEC)
 
     # submit Slurm job
-    if cluster:
-        print("info: run slurm job", file=sys.stderr)
-
+    if cluster and not local:
         # find env
         env = os.environ.copy()
 
@@ -128,9 +120,7 @@ def run_data(filename_script, filename_log, local, cluster):
         _run_cmd_raw(command, env)
 
     # run locally
-    if local:
-        print("info: run shell job", file=sys.stderr)
-
+    if local and not cluster:
         # find env
         env = os.environ.copy()
         env["SLURM_JOB_ID"] = "NOT SLURM"
