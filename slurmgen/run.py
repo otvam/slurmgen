@@ -11,7 +11,13 @@ import stat
 import os.path
 import subprocess
 
-from slurmgen.error import SlurmGenError
+
+class RunError(Exception):
+    """
+    Exception during data loading and parsing.
+    """
+
+    pass
 
 
 def _run_cmd_raw(command, env):
@@ -39,11 +45,11 @@ def _run_cmd_raw(command, env):
         # wait return
         process.wait()
     except OSError as ex:
-        raise SlurmGenError("error: command error: %s" % str(ex))
+        raise RunError("command error: %s" % str(ex))
 
     # check return code
     if process.returncode != 0:
-        raise SlurmGenError("invalid return code")
+        raise RunError("invalid return code")
 
 
 def _run_cmd_log(command, filename_log, env):
@@ -82,11 +88,11 @@ def _run_cmd_log(command, filename_log, env):
         # wait return
         process.wait()
     except OSError as ex:
-        raise SlurmGenError("error: command error: %s" % str(ex))
+        raise RunError("command error: %s" % str(ex))
 
     # check return code
     if process.returncode != 0:
-        raise SlurmGenError("invalid return code")
+        raise RunError("invalid return code")
 
 
 def run_data(filename_script, filename_log, local, cluster):
@@ -111,7 +117,7 @@ def run_data(filename_script, filename_log, local, cluster):
 
     # check for incompatible flag
     if local and cluster:
-        raise SlurmGenError("invalid flag: local and cluster")
+        raise RunError("invalid flag: local and cluster")
 
     # submit Slurm job
     if cluster:

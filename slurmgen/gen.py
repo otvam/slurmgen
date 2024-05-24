@@ -9,7 +9,14 @@ __license__ = "BSD License"
 import os.path
 import shutil
 import datetime
-from slurmgen.error import SlurmGenError
+
+
+class GenError(Exception):
+    """
+    Exception during the script generation.
+    """
+
+    pass
 
 
 def _write_title(fid, tag):
@@ -50,11 +57,11 @@ def _write_header(fid, tag, filename_log, pragmas):
 
     # check pragmas
     if "job-name" in pragmas:
-        raise SlurmGenError("error: job name is already set by the script")
+        raise GenError("job name is already set by the script")
     if "output" in pragmas:
-        raise SlurmGenError("error: job log is already set by the script")
+        raise GenError("job log is already set by the script")
     if "error" in pragmas:
-        raise SlurmGenError("error: job log is already set by the script")
+        raise GenError("job log is already set by the script")
 
     fid.write('#!/bin/bash\n')
     fid.write('\n')
@@ -250,11 +257,11 @@ def run_data(tag, overwrite, folder, pragmas, envs, commands):
 
     # check that the output files are not existing
     if os.path.isfile(filename_script):
-        raise SlurmGenError("error: Slurm file already exists")
+        raise GenError("Slurm file already exists")
     if os.path.isfile(filename_log):
-        raise SlurmGenError("error: log file already exists")
+        raise GenError("log file already exists")
     if not os.path.isdir(folder_output):
-        raise SlurmGenError("error: output folder does not exist")
+        raise GenError("output folder does not exist")
 
     # remove folders
     for folder in folder_delete:

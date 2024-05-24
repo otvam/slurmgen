@@ -23,7 +23,7 @@ if __name__ == "__main__":
         FILENAME = sys.argv[1]
         ARGUMENT = sys.argv[2]
     else:
-        print("error: invalid arguments")
+        print("invalid arguments")
         sys.exit(1)
 
     # print the variable content
