@@ -75,7 +75,7 @@ def _run_cmd_log(command, filename_log, env):
         # display data
         with open(filename_log, "w") as fid:
             for line in process.stdout:
-                print(line.strip(), file=sys.stdout)
+                print(line.rstrip(), file=sys.stdout)
                 fid.write(line)
                 fid.flush()
 
