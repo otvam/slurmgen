@@ -28,6 +28,7 @@ if __name__ == "__main__":
 
     # print the variable content
     print("enter script")
+    print("enter script", file=sys.stderr)
     print("    ARGUMENT = %s" % ARGUMENT)
     print("    VARWORLD = %s" % VARWORLD)
     print("exit script")

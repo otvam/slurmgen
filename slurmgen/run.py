@@ -6,9 +6,11 @@ __author__ = "Thomas Guillod"
 __copyright__ = "Thomas Guillod - Dartmouth College"
 __license__ = "BSD License"
 
+import sys
 import stat
 import os.path
 import subprocess
+
 from slurmgen.error import SlurmGenError
 
 
@@ -26,18 +28,25 @@ def _run_cmd_raw(command, env):
 
     # run the command
     try:
-        process = subprocess.run(
+        # start process
+        process = subprocess.Popen(
             command,
             env=env,
+            stderr=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
         )
+
+        # wait return
+        process.wait()
+        print("info: process is finished", file=sys.stderr)
     except OSError as ex:
         raise SlurmGenError("error: command error: %s" % str(ex))
 
     # check return code
     if process.returncode == 0:
-        print("info: valid return code")
+        print("info: valid return code", file=sys.stderr)
     else:
-        raise SlurmGenError("error: invalid return code")
+        raise SlurmGenError("invalid return code")
 
 
 def _run_cmd_log(command, filename_log, env):
@@ -56,21 +65,33 @@ def _run_cmd_log(command, filename_log, env):
 
     # run the command
     try:
+        # start process
+        process = subprocess.Popen(
+            command,
+            env=env,
+            stderr=subprocess.STDOUT,
+            stdout=subprocess.PIPE,
+            text=True,
+            bufsize=1,
+        )
+
+        # display data
         with open(filename_log, "w") as fid:
-            process = subprocess.run(
-                command,
-                env=env,
-                stderr=fid,
-                stdout=fid,
-            )
+            for line in process.stdout:
+                print(line.strip(), file=sys.stdout)
+                fid.write(line)
+
+        # wait return
+        process.wait()
+        print("info: process is finished", file=sys.stderr)
     except OSError as ex:
         raise SlurmGenError("error: command error: %s" % str(ex))
 
     # check return code
     if process.returncode == 0:
-        print("info: valid return code")
+        print("info: valid return code", file=sys.stderr)
     else:
-        raise SlurmGenError("error: invalid return code")
+        raise SlurmGenError("invalid return code")
 
 
 def run_data(filename_script, filename_log, local, cluster):
@@ -95,7 +116,7 @@ def run_data(filename_script, filename_log, local, cluster):
 
     # submit Slurm job
     if cluster:
-        print("info: run Slurm job")
+        print("info: run slurm job", file=sys.stderr)
 
         # find env
         env = os.environ.copy()
@@ -108,7 +129,7 @@ def run_data(filename_script, filename_log, local, cluster):
 
     # run locally
     if local:
-        print("info: run Shell job")
+        print("info: run shell job", file=sys.stderr)
 
         # find env
         env = os.environ.copy()

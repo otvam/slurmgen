@@ -169,12 +169,6 @@ def _get_def(def_file, tmpl_data):
     except OSError as ex:
         raise SlurmGenError("error: definition file not found: %s" % str(ex))
 
-    # show template content
-    if tmpl_data:
-        print("info: template content")
-        for tag, val in tmpl_data.items():
-            print("info: var: \"%s\" => \"%s\"" % (tag, val))
-
     # apply the template
     try:
         obj = string.Template(data_raw)
@@ -218,12 +212,15 @@ def run_args(def_file, tmpl_file=None, tmpl_str=None, local=False, cluster=False
     try:
         # change working directory
         if directory is not None:
+            print("info: change directory", file=sys.stderr)
             os.chdir(directory)
 
         # get the template data
+        print("info: load template", file=sys.stderr)
         tmpl_data = _get_template(tmpl_file, tmpl_str)
 
         # get the job definition file and apply the template
+        print("info: apply template", file=sys.stderr)
         def_data = _get_def(def_file, tmpl_data)
 
         # extract data
@@ -262,11 +259,15 @@ def run_script():
     # get argument parser
     parser = _get_parser()
 
+    # init
+    print("info: ============== SlurmGen ==============", file=sys.stderr)
+
     # parse the arguments
     args = parser.parse_args()
 
     # run
     try:
+        # run script
         run_args(
             args.def_file,
             tmpl_file=args.tmpl_file,
@@ -275,6 +276,9 @@ def run_script():
             cluster=args.cluster,
             directory=args.directory,
         )
+
+        # teardown
+        print("info: ============== SlurmGen ==============", file=sys.stderr)
     except SlurmGenError as ex:
         print("error: ============== SlurmGen ==============", file=sys.stderr)
         print(str(ex), file=sys.stderr)
@@ -282,7 +286,7 @@ def run_script():
         sys.exit(1)
     except Exception as ex:
         print("error: ============== Unknown ==============", file=sys.stderr)
-        traceback.print_exception(ex, limit=0, chain=False)
+        traceback.print_exception(ex, limit=0, chain=False, file=sys.stderr)
         print("error: ============== Unknown ==============", file=sys.stderr)
         sys.exit(1)
 
