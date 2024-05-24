@@ -108,8 +108,12 @@ def run_data(filename_script, filename_log, local, cluster):
     st = os.stat(filename_script)
     os.chmod(filename_script, st.st_mode | stat.S_IEXEC)
 
+    # check for incompatible flag
+    if local and cluster:
+        raise SlurmGenError("invalid flag: local and cluster")
+
     # submit Slurm job
-    if cluster and not local:
+    if cluster:
         # find env
         env = os.environ.copy()
 
@@ -120,7 +124,7 @@ def run_data(filename_script, filename_log, local, cluster):
         _run_cmd_raw(command, env)
 
     # run locally
-    if local and not cluster:
+    if local:
         # find env
         env = os.environ.copy()
         env["SLURM_JOB_ID"] = "NOT SLURM"
