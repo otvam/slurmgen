@@ -8,7 +8,7 @@ __license__ = "BSD License"
 
 import os.path
 import shutil
-import datetime
+import time
 
 
 class GenError(Exception):
@@ -65,7 +65,7 @@ def _write_header(fid, tag, filename_log, pragmas):
 
     fid.write('#!/bin/bash\n')
     fid.write('\n')
-    fid.write('# ############### define Slurm commands\n')
+    fid.write('# ############### Slurm commands\n')
     fid.write('#SBATCH --job-name="%s"\n' % tag)
     fid.write('#SBATCH --output="%s"\n' % filename_log)
     for tag, val in pragmas.items():
@@ -95,19 +95,18 @@ def _write_summary(fid, tag, filename_script, filename_log):
     """
 
     # get current timestamp
-    date = datetime.datetime.utcnow()
+    timestamp = int(time.time())
 
     # write the job name, log file, and script file
     fid.write('echo "==================== PARAM"\n')
-    fid.write('echo "JOB TAG      : %s"\n' % tag)
-    fid.write('echo "LOG FILE     : %s"\n' % filename_log)
-    fid.write('echo "SCRIPT FILE  : %s"\n' % filename_script)
+    fid.write(f'echo "JOB TAG      : {tag}"\n')
+    fid.write('echo "HOSTNAME     : $HOSTNAME"\n')
     fid.write('\n')
 
     # write data about the job submission
     fid.write('echo "==================== TIME"\n')
-    fid.write('echo "DATE GEN     : %s"\n' % date.strftime("%D %H:%M:%S"))
-    fid.write('echo "DATE RUN     : `date -u +"%D %H:%M:%S"`"\n')
+    fid.write(f'echo "DATE GEN     : `date -u +"%D : %H:%M:%S" -d @{timestamp}`"\n')
+    fid.write(f'echo "DATE RUN     : `date -u +"%D : %H:%M:%S" -d @$(date -u +%s)`"\n')
     fid.write('\n')
 
     # write the job id, job name, and the assigned node names
@@ -131,7 +130,7 @@ def _write_envs(fid, envs):
     """
 
     if envs:
-        fid.write('echo "==================== ENV VAR"\n')
+        fid.write('# ############### environment variables\n')
         for var, val in envs.items():
             if (var is not None) and (val is not None):
                 fid.write('export %s="%s"\n' % (var, val))
@@ -189,14 +188,14 @@ def _generate_file(tag, filename_script, filename_log, pragmas, envs, commands):
         # write pragmas
         _write_header(fid, tag, filename_log, pragmas)
 
+        # write environment variables
+        _write_envs(fid, envs)
+
         # write script header
         _write_title(fid, tag)
 
         # write summary of the variables
         _write_summary(fid, tag, filename_script, filename_log)
-
-        # write environment variables
-        _write_envs(fid, envs)
 
         # write the commands to be executed
         _write_commands(fid, commands)

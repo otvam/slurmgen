@@ -1,16 +1,14 @@
-================================== test - 05/24/24 14:52:38
+================================== test - 05/29/24 00:40:40
 ==================== PARAM
 JOB TAG      : test
-LOG FILE     : slurm_output/test.log
-SCRIPT FILE  : slurm_output/test.sh
+HOSTNAME     : l380
 ==================== TIME
-DATE GEN     : 05/24/24 14:52:38
-DATE RUN     : 05/24/24 14:52:38
+DATE GEN     : 05/28/24 : 20:40:40
+DATE RUN     : 05/28/24 : 20:40:40
 ==================== SLURM
-JOB ID       : NOT SLURM
-JOB NAME     : NOT SLURM
-JOB NODE     : NOT SLURM
-==================== ENV VAR
+JOB ID       : LOCAL
+JOB NAME     : LOCAL
+JOB NODE     : LOCAL
 ==================== RUN: version
 Python 3.10.12
 ==================== RUN: hello
@@ -25,4 +23,4 @@ enter script
     ARGUMENT = goodbye world!
     VARWORLD = Welcome to everyone
 exit script
-================================== test - 05/24/24 14:52:38
+================================== test - 05/29/24 00:40:40

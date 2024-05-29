@@ -134,9 +134,9 @@ def run_data(filename_script, filename_log, local, cluster):
     if local:
         # find env
         env = os.environ.copy()
-        env["SLURM_JOB_ID"] = "NOT SLURM"
-        env["SLURM_JOB_NAME"] = "NOT SLURM"
-        env["SLURM_JOB_NODELIST"] = "NOT SLURM"
+        env["SLURM_JOB_ID"] = "LOCAL"
+        env["SLURM_JOB_NAME"] = "LOCAL"
+        env["SLURM_JOB_NODELIST"] = "LOCAL"
 
         # find command
         command = [filename_script]

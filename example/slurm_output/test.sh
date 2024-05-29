@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# ############### define Slurm commands
+# ############### Slurm commands
 #SBATCH --job-name="test"
 #SBATCH --output="slurm_output/test.log"
 #SBATCH --time="4:00:00"
@@ -11,25 +11,24 @@
 # ############### init exit code
 ret=0
 
+# ############### environment variables
+export PYTHONUNBUFFERED="1"
+export VARWORLD="Welcome to everyone"
+
 echo "================================== test - `date -u +"%D %H:%M:%S"`"
 
 echo "==================== PARAM"
 echo "JOB TAG      : test"
-echo "LOG FILE     : slurm_output/test.log"
-echo "SCRIPT FILE  : slurm_output/test.sh"
+echo "HOSTNAME     : $HOSTNAME"
 
 echo "==================== TIME"
-echo "DATE GEN     : 05/24/24 14:52:38"
-echo "DATE RUN     : `date -u +"%D %H:%M:%S"`"
+echo "DATE GEN     : `date +"%D : %H:%M:%S" -d @1716943240`"
+echo "DATE RUN     : `date +"%D : %H:%M:%S" -d @$(date -u +%s)`"
 
 echo "==================== SLURM"
 echo "JOB ID       : $SLURM_JOB_ID"
 echo "JOB NAME     : $SLURM_JOB_NAME"
 echo "JOB NODE     : $SLURM_JOB_NODELIST"
-
-echo "==================== ENV VAR"
-export PYTHONUNBUFFERED="1"
-export VARWORLD="Welcome to everyone"
 
 echo "==================== RUN: version"
 python3 --version
