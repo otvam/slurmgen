@@ -47,7 +47,7 @@ def _run_cmd_raw(command, env):
     except OSError as ex:
         raise RunError("command error: %s" % str(ex))
 
-    # check return code
+    # check return code (failure not allowed)
     if process.returncode != 0:
         raise RunError("invalid return code")
 
@@ -90,8 +90,8 @@ def _run_cmd_log(command, filename_log, env):
     except OSError as ex:
         raise RunError("command error: %s" % str(ex))
 
-    # check return code
-    if process.returncode != 0:
+    # check return code (failure allowed)
+    if process.returncode >= 0:
         raise RunError("invalid return code")
 
 
