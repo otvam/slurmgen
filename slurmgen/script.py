@@ -118,13 +118,13 @@ def _get_template(tmpl_file, tmpl_str):
             with open(tmpl_file, "r") as fid:
                 data_raw = fid.read()
         except OSError as ex:
-            raise ScriptError("template file not found: %s" % str(ex))
+            raise ScriptError("template file not found: %s" % str(ex)) from None
 
         # parse the template data
         try:
             tmpl_tmp = json.loads(data_raw)
         except json.JSONDecodeError as ex:
-            raise ScriptError("template file is invalid: %s" % str(ex))
+            raise ScriptError("template file is invalid: %s" % str(ex)) from None
 
         # check type
         if type(tmpl_tmp) is not dict:
@@ -174,20 +174,20 @@ def _get_def(def_file, tmpl_data):
         with open(def_file, "r") as fid:
             data_raw = fid.read()
     except OSError as ex:
-        raise ScriptError("definition file not found: %s" % str(ex))
+        raise ScriptError("definition file not found: %s" % str(ex)) from None
 
     # apply the template
     try:
         obj = string.Template(data_raw)
         def_data = obj.substitute(tmpl_data)
     except (ValueError, KeyError) as ex:
-        raise ScriptError("template parsing error: %s" % str(ex))
+        raise ScriptError("template parsing error: %s" % str(ex)) from None
 
     # load the JSON data
     try:
         def_data = json.loads(def_data)
     except json.JSONDecodeError as ex:
-        raise ScriptError("definition file is invalid: %s" % str(ex))
+        raise ScriptError("definition file is invalid: %s" % str(ex)) from None
 
     return def_data
 

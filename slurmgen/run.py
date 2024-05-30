@@ -20,20 +20,23 @@ class RunError(Exception):
     pass
 
 
-def _run_cmd_raw(command, env):
+def _run_cmd_sbatch(filename_script, env):
     """
     Run a Slurm script.
 
     Parameters
     ----------
-    command : list
-        Command to be executed.
+    filename_script : string
+        Path of the script controlling the simulation.
     env : dict
         Dictionary with the environment variables.
     """
 
     # run the command
     try:
+        # find command
+        command = ["sbatch", filename_script]
+
         # start process
         process = subprocess.Popen(
             command,
@@ -45,11 +48,11 @@ def _run_cmd_raw(command, env):
         # wait return
         process.wait()
     except OSError as ex:
-        raise RunError("command error: %s" % str(ex))
+        raise RunError("sbatch error: %s" % str(ex)) from None
 
     # check return code (failure not allowed)
     if process.returncode != 0:
-        raise RunError("invalid return code")
+        raise RunError("invalid sbatch return code")
 
 
 def _run_cmd_log(command, filename_log, env):
@@ -88,11 +91,7 @@ def _run_cmd_log(command, filename_log, env):
         # wait return
         process.wait()
     except OSError as ex:
-        raise RunError("command error: %s" % str(ex))
-
-    # check return code (failure allowed)
-    if process.returncode >= 0:
-        raise RunError("invalid return code")
+        raise RunError("command error: %s" % str(ex)) from None
 
 
 def run_data(filename_script, filename_log, local, cluster):
@@ -124,11 +123,8 @@ def run_data(filename_script, filename_log, local, cluster):
         # find env
         env = os.environ.copy()
 
-        # find command
-        command = ["sbatch", filename_script]
-
         # run
-        _run_cmd_raw(command, env)
+        _run_cmd_sbatch(filename_script, env)
 
     # run locally
     if local:
