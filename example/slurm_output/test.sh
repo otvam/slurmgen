@@ -22,7 +22,7 @@ echo "JOB TAG      : test"
 echo "HOSTNAME     : $HOSTNAME"
 
 echo "==================== TIME"
-echo "DATE GEN     : `date -u +"%D : %H:%M:%S" -d @1717027380`"
+echo "DATE GEN     : `date -u +"%D : %H:%M:%S" -d @1726845212`"
 echo "DATE RUN     : `date -u +"%D : %H:%M:%S" -d @$(date -u +%s)`"
 
 echo "==================== SLURM"

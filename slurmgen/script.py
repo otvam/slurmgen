@@ -91,7 +91,7 @@ def _get_parser():
     return parser
 
 
-def _get_template(tmpl_file, tmpl_str):
+def _get_template_data(tmpl_file, tmpl_str):
     """
     Load the template data (from file and from string).
 
@@ -152,7 +152,7 @@ def _get_template(tmpl_file, tmpl_str):
     return tmpl_data
 
 
-def _get_def(def_file, tmpl_data):
+def _get_def_data(def_file, tmpl_data):
     """
     Load the job definition file and run the template.
 
@@ -192,18 +192,14 @@ def _get_def(def_file, tmpl_data):
     return def_data
 
 
-def run_args(def_file, tmpl_file=None, tmpl_str=None, local=False, cluster=False, directory=None):
+def run_data(def_data, local=False, cluster=False, directory=None):
     """
     Run the script with arguments.
 
     Parameters
     ----------
-    def_file : string
-        String with a JSON file containing the job definition data.
-    tmpl_file : string
-        String with a JSON file containing template data.
-    tmpl_str : list
-        List with keys/values containing template data.
+    def_data : dict
+        Dictionary containing the job definition data.
     local : bool
         Run (or not) the job locally.
     cluster : bool
@@ -215,18 +211,8 @@ def run_args(def_file, tmpl_file=None, tmpl_str=None, local=False, cluster=False
     # save working directory
     cwd = os.getcwd()
 
-    # get template data
+    # run the script
     try:
-        # change working directory
-        if directory is not None:
-            os.chdir(directory)
-
-        # get the template data
-        tmpl_data = _get_template(tmpl_file, tmpl_str)
-
-        # get the job definition file and apply the template
-        def_data = _get_def(def_file, tmpl_data)
-
         # extract data
         tag = def_data["tag"]
         overwrite = def_data["overwrite"]
@@ -235,12 +221,17 @@ def run_args(def_file, tmpl_file=None, tmpl_str=None, local=False, cluster=False
         envs = def_data["envs"]
         commands = def_data["commands"]
 
+        # change working directory
+        if directory is not None:
+            os.chdir(directory)
+
         # create the Slurm script
         (filename_script, filename_log) = gen.run_data(tag, overwrite, folder, pragmas, envs, commands)
 
         # run the Slurm script
         run.run_data(filename_script, filename_log, local, cluster)
     finally:
+        # restore the original working directory
         os.chdir(cwd)
 
 
@@ -268,10 +259,14 @@ def run_script():
 
     # run
     try:
-        run_args(
-            args.def_file,
-            tmpl_file=args.tmpl_file,
-            tmpl_str=args.tmpl_str,
+        # get the template data
+        tmpl_data = _get_template_data(args.tmpl_file, args.tmpl_str)
+
+        # get the job definition file and apply the template
+        def_data = _get_def_data(args.def_file, tmpl_data)
+
+        run_data(
+            def_data,
             local=args.local,
             cluster=args.cluster,
             directory=args.directory,
