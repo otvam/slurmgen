@@ -1,6 +1,7 @@
 {
     "tag": "$title",
     "overwrite": true,
+    "failfast": true,
     "folder": "slurm_output",
     "pragmas": {
         "time": "4:00:00",
@@ -15,15 +16,15 @@
     "commands": [
         {
             "tag": "version",
-            "cmd": "python3 --version"
+            "cmd": ["python3 --version"]
         },
         {
             "tag": "hello",
-            "cmd": "python3 run_slurm.py \"hello\" \"hello world!\""
+            "cmd": ["python3 run_slurm.py \"hello\" \"hello world!\""]
         },
         {
             "tag": "goodbye",
-            "cmd": "python3 run_slurm.py \"goodbye\" \"goodbye world!\""
+            "cmd": ["python3 run_slurm.py \"goodbye\" \"goodbye world!\""]
         }
     ]
 }

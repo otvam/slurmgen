@@ -213,20 +213,12 @@ def run_data(def_data, local=False, cluster=False, directory=None):
 
     # run the script
     try:
-        # extract data
-        tag = def_data["tag"]
-        overwrite = def_data["overwrite"]
-        folder = def_data["folder"]
-        pragmas = def_data["pragmas"]
-        envs = def_data["envs"]
-        commands = def_data["commands"]
-
         # change working directory
         if directory is not None:
             os.chdir(directory)
 
         # create the Slurm script
-        (filename_script, filename_log) = gen.run_data(tag, overwrite, folder, pragmas, envs, commands)
+        (filename_script, filename_log) = gen.run_data(def_data)
 
         # run the Slurm script
         run.run_data(filename_script, filename_log, local, cluster)

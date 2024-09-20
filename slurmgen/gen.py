@@ -39,7 +39,7 @@ def _write_title(fid, tag):
     fid.write('\n')
 
 
-def _write_header(fid, tag, filename_log, pragmas):
+def _write_header(fid, tag, failfast, pragmas, filename_log):
     """
     Write the script header.
 
@@ -49,10 +49,12 @@ def _write_header(fid, tag, filename_log, pragmas):
         File descriptor for the script.
     tag : string
         Name of the job to be created.
-    filename_log : string
-        Path of the log file created by during the Slurm job.
+    failfast : bool
+        Switch existing the script after failures.
     pragmas : dict
         Dictionary with the pragmas controlling the Slurm job.
+    filename_log : string
+        Path of the log file created by during the Slurm job.
     """
 
     # check pragmas
@@ -65,15 +67,19 @@ def _write_header(fid, tag, filename_log, pragmas):
 
     fid.write('#!/bin/bash\n')
     fid.write('\n')
+    if failfast:
+        fid.write('# ############### Bash commands\n')
+        fid.write('set -e error\n')
+        fid.write('set -o nounset\n')
+        fid.write('set -o pipefail\n')
+        fid.write('\n')
+
     fid.write('# ############### Slurm commands\n')
     fid.write('#SBATCH --job-name="%s"\n' % tag)
     fid.write('#SBATCH --output="%s"\n' % filename_log)
     for tag, val in pragmas.items():
         if (tag is not None) and (val is not None):
             fid.write('#SBATCH --%s="%s"\n' % (tag, val))
-    fid.write('\n')
-    fid.write('# ############### init exit code\n')
-    fid.write('ret=0\n')
     fid.write('\n')
 
 
@@ -154,16 +160,18 @@ def _write_commands(fid, commands):
         tag = tmp["tag"]
         cmd = tmp["cmd"]
 
-        # write command
+        # header
         fid.write('echo "==================== RUN: %s"\n' % tag)
-        fid.write('%s\n' % cmd)
 
-        # update status
-        fid.write('ret=$(( ret || $? ))\n')
+        # write command
+        for cmd_sub in cmd:
+            fid.write('%s\n' % cmd_sub)
+
+        # check status
         fid.write('\n')
 
 
-def _generate_file(tag, filename_script, filename_log, pragmas, envs, commands):
+def _generate_file(tag, failfast, pragmas, envs, commands, filename_script, filename_log):
     """
     Generate and write a Slurm script or a Shell script.
 
@@ -171,22 +179,24 @@ def _generate_file(tag, filename_script, filename_log, pragmas, envs, commands):
     ----------
     tag : string
         Name of the job to be created.
-    filename_script : string
-        Path of the script controlling the simulation.
-    filename_log : string
-        Path of the log file created by during the Slurm job.
+    failfast : bool
+        Switch existing the script after failures.
     pragmas : dict
         Dictionary with the pragmas controlling the Slurm job.
     envs : dict
         Dictionary of environment variable to be set and exported.
     commands : list
         List of commands to be executed by the job.
+    filename_script : string
+        Path of the script controlling the simulation.
+    filename_log : string
+        Path of the log file created by during the Slurm job.
     """
 
     # write the data
     with open(filename_script, "w") as fid:
         # write pragmas
-        _write_header(fid, tag, filename_log, pragmas)
+        _write_header(fid, tag, failfast, pragmas, filename_log)
 
         # write environment variables
         _write_envs(fid, envs)
@@ -204,29 +214,35 @@ def _generate_file(tag, filename_script, filename_log, pragmas, envs, commands):
         _write_title(fid, tag)
 
         # end script footer
-        fid.write('# ############### exit with status\n')
-        fid.write('exit $ret\n')
+        fid.write('# ############### exit script\n')
+        fid.write('exit 0\n')
         
 
-def run_data(tag, overwrite, folder, pragmas, envs, commands):
+def run_data(def_data):
     """
     Generate a Slurm script.
 
     Parameters
     ----------
-    tag : string
-        Name of the job to be created.
-    overwrite : bool
-        Switch controlling if previous script and log should be replaced.
-    folder : string
-        Name of the output folder for the script and log files.
-    pragmas : dict
-        Dictionary with the pragmas controlling the Slurm job.
-    vaenvsrs : dict
-        Dictionary of environment variable to be set and exported.
-    commands : list
-        List of commands to be executed by the job.
+    def_data : dict
+        Dictionary containing the job definition data.
+
+    Returns
+    -------
+    filename_script : string
+        Path of the script controlling the simulation.
+    filename_log : string
+        Path of the log file created by during the Slurm job.
     """
+
+    # extract data
+    tag = def_data["tag"]
+    overwrite = def_data["overwrite"]
+    failfast = def_data["failfast"]
+    folder = def_data["folder"]
+    pragmas = def_data["pragmas"]
+    envs = def_data["envs"]
+    commands = def_data["commands"]
 
     # create folder
     try:
@@ -260,6 +276,6 @@ def run_data(tag, overwrite, folder, pragmas, envs, commands):
         raise GenError("log file already exists")
 
     # create the script
-    _generate_file(tag, filename_script, filename_log, pragmas, envs, commands)
+    _generate_file(tag, failfast, pragmas, envs, commands, filename_script, filename_log)
 
     return filename_script, filename_log
