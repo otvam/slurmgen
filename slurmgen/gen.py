@@ -69,7 +69,7 @@ def _write_header(fid, tag, failfast, pragmas, filename_log):
     fid.write('\n')
     if failfast:
         fid.write('# ############### Bash commands\n')
-        fid.write('set -e error\n')
+        fid.write('set -e\n')
         fid.write('set -o nounset\n')
         fid.write('set -o pipefail\n')
         fid.write('\n')
