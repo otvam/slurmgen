@@ -119,7 +119,7 @@ def _write_summary(fid, tag, filename_script, filename_log):
 
 def _write_envs(fid, envs):
     """
-    Handling of the folders and the environment variables.
+    Handling of the environment variables.
 
     Parameters
     ----------
@@ -218,10 +218,8 @@ def run_data(tag, overwrite, folder, pragmas, envs, commands):
         Name of the job to be created.
     overwrite : bool
         Switch controlling if previous script and log should be replaced.
-    folder : dict
+    folder : string
         Name of the output folder for the script and log files.
-        Name of the folders that should be deleted at the start of the job.
-        Name of the folders that should be created at the start of the job.
     pragmas : dict
         Dictionary with the pragmas controlling the Slurm job.
     vaenvsrs : dict
@@ -230,14 +228,19 @@ def run_data(tag, overwrite, folder, pragmas, envs, commands):
         List of commands to be executed by the job.
     """
 
-    # extract data
-    folder_output = folder["folder_output"]
-    folder_delete = folder["folder_delete"]
-    folder_create = folder["folder_create"]
+    # create folder
+    try:
+        os.makedirs(folder)
+    except FileExistsError:
+        pass
+
+    # check that the folder exists
+    if not os.path.isdir(folder):
+        raise GenError("output folder cannot be created")
 
     # get filenames
-    filename_script = os.path.join(folder_output, tag + ".sh")
-    filename_log = os.path.join(folder_output, tag + ".log")
+    filename_script = os.path.join(folder, tag + ".sh")
+    filename_log = os.path.join(folder, tag + ".log")
 
     # remove previous files (if selected)
     if overwrite:
@@ -249,32 +252,12 @@ def run_data(tag, overwrite, folder, pragmas, envs, commands):
             os.remove(filename_log)
         except FileNotFoundError:
             pass
-        try:
-            os.makedirs(folder_output)
-        except FileExistsError:
-            pass
 
     # check that the output files are not existing
     if os.path.isfile(filename_script):
         raise GenError("Slurm file already exists")
     if os.path.isfile(filename_log):
         raise GenError("log file already exists")
-    if not os.path.isdir(folder_output):
-        raise GenError("output folder does not exist")
-
-    # remove folders
-    for folder in folder_delete:
-        try:
-            shutil.rmtree(folder)
-        except FileNotFoundError:
-            pass
-
-    # create folders
-    for folder in folder_create:
-        try:
-            os.makedirs(folder)
-        except FileExistsError:
-            pass
 
     # create the script
     _generate_file(tag, filename_script, filename_log, pragmas, envs, commands)
