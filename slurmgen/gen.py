@@ -67,11 +67,6 @@ def _write_header(fid, tag, failfast, pragmas, filename_log):
 
     fid.write('#!/bin/bash\n')
     fid.write('\n')
-    if failfast:
-        fid.write('# ############### Bash commands\n')
-        fid.write('set -u\n')
-        fid.write('set -e\n')
-        fid.write('\n')
 
     fid.write('# ############### Slurm commands\n')
     fid.write('#SBATCH --job-name="%s"\n' % tag)
@@ -80,6 +75,12 @@ def _write_header(fid, tag, failfast, pragmas, filename_log):
         if (tag is not None) and (val is not None):
             fid.write('#SBATCH --%s="%s"\n' % (tag, val))
     fid.write('\n')
+
+    if failfast:
+        fid.write('# ############### Bash commands\n')
+        fid.write('set -u\n')
+        fid.write('set -e\n')
+        fid.write('\n')
 
 
 def _write_summary(fid, tag, filename_script, filename_log):
