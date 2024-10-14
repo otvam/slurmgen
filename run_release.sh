@@ -2,8 +2,6 @@
 # Script for creating a release:
 #   - create a tag
 #   - create a release
-#   - build the documentation and the package
-#   - upload the documentation
 #   - upload the package
 #
 # Thomas Guillod - Dartmouth College
