@@ -250,10 +250,7 @@ def run_data(def_data):
     commands = def_data["commands"]
 
     # create folder
-    try:
-        os.makedirs(folder)
-    except FileExistsError:
-        pass
+    os.makedirs(folder, exist_ok=True)
 
     # check that the folder exists
     if not os.path.isdir(folder):

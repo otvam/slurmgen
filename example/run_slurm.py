@@ -33,6 +33,7 @@ if __name__ == "__main__":
     print("exit script")
 
     # create file with the variable content
+    os.makedirs("data_output", exist_ok=True)
     with open(os.path.join("data_output", FILENAME + ".txt"), "w") as fid:
         fid.write("ARGUMENT = %s\n" % ARGUMENT)
         fid.write("VARWORLD = %s\n" % VARWORLD)
