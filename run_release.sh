@@ -7,7 +7,6 @@
 #   - upload the package
 #
 # Thomas Guillod - Dartmouth College
-# Mozilla Public License Version 2.0
 
 set -o nounset
 set -o pipefail
