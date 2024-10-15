@@ -1,7 +1,8 @@
 # SlurmGen - Simple Slurm Manager
 
 > * **Repository: [github.com/otvam/slurmgen](https://github.com/otvam/slurmgen)**
-> * **Package: [pypi.org/project/slurmgen](https://pypi.org/project/slurmgen)**
+> * **PyPi: [pypi.org/project/slurmgen](https://pypi.org/project/slurmgen)**
+> * **Conda: [anaconda.org/conda-forge/slurmgen](https://anaconda.org/conda-forge/slurmgen)**
 
 ## Summary
 
@@ -51,6 +52,7 @@ sgen job_def.json --cluster --tmpl_file job_tmpl.json
 * Tags: https://github.com/otvam/slurmgen/tags
 * Issues: https://github.com/otvam/slurmgen/issues
 * PyPi: https://pypi.org/project/slurmgen
+* Conda: https://anaconda.org/conda-forge/slurmgen
 
 ## Author
 
