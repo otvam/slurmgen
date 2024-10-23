@@ -169,8 +169,7 @@ def _write_commands(fid, commands):
         fid.write('echo "==================== RUN: %s"\n' % tag)
 
         # write command
-        for cmd_sub in cmd:
-            fid.write('%s\n' % cmd_sub)
+        fid.write('%s\n' % cmd)
 
         # check status
         fid.write('\n')
