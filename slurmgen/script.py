@@ -265,7 +265,7 @@ def run_script():
         )
     except Exception as ex:
         print("================================== invalid termination", file=sys.stderr)
-        traceback.print_exception(ex, limit=0, chain=False, file=sys.stderr)
+        traceback.print_exception(ex, file=sys.stderr)
         print("================================== invalid termination", file=sys.stderr)
         sys.exit(1)
 
