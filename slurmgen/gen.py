@@ -7,7 +7,6 @@ __copyright__ = "Thomas Guillod - Dartmouth College"
 __license__ = "BSD License"
 
 import os.path
-import shutil
 import time
 
 
@@ -88,7 +87,7 @@ def _write_header(fid, tag, failfast, pragmas, filename_log):
         fid.write('\n')
 
 
-def _write_summary(fid, tag, filename_script, filename_log):
+def _write_summary(fid, tag):
     """
     Add the different variables to the Slurm script.
     The content of the variables will be added to the log.
@@ -99,10 +98,6 @@ def _write_summary(fid, tag, filename_script, filename_log):
         File descriptor for the script.
     tag : string
         Name of the job to be created.
-    filename_script : string
-        Path of the script controlling the simulation.
-    filename_log : string
-        Path of the log file created by during the Slurm job.
     """
 
     # get current timestamp
@@ -209,7 +204,7 @@ def _generate_file(tag, failfast, pragmas, envs, commands, filename_script, file
         _write_title(fid, tag)
 
         # write summary of the variables
-        _write_summary(fid, tag, filename_script, filename_log)
+        _write_summary(fid, tag)
 
         # write the commands to be executed
         _write_commands(fid, commands)
