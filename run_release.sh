@@ -9,6 +9,58 @@
 set -o nounset
 set -o pipefail
 
+function check_release {
+  echo "======================================================================"
+  echo "CHECK RELEASE"
+  echo "======================================================================"
+
+  # init status
+  ret=0
+
+  # check the version number
+  rx='^([0-9]+)\.([0-9]+)\.([0-9]+)$'
+  if ! [[ $VER =~ $rx ]]
+  then
+    echo "error: invalid version number format"
+    ret=1
+  fi
+
+  # check the release message
+  rx='^ *$'
+  if [[ $MSG =~ $rx ]]
+  then
+    echo "error: invalid release message format"
+    ret=1
+  fi
+
+  # check git branch name
+  if [[ $(git rev-parse --abbrev-ref HEAD) != "main" ]]
+  then
+    echo "error: release should be done from main"
+    ret=1
+  fi
+
+  # check git tag existence
+  if [[ $(git tag -l $VER) ]]
+  then
+    echo "error: version number already exists"
+    ret=1
+  fi
+
+  # check git repository status
+  if ! [[ -z "$(git status --porcelain)" ]]
+  then
+    echo "error: git status is not clean"
+    ret=1
+  fi
+
+  # check status
+  if [[ $ret != 0 ]]
+  then
+    exit $ret
+  fi
+}
+
 function clean_data {
   echo "======================================================================"
   echo "CLEAN DATA"
@@ -66,6 +118,7 @@ else
 fi
 
 # run the code
+check_release
 clean_data
 create_tag
 create_release
