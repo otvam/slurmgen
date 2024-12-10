@@ -47,6 +47,7 @@ def _run_cmd_sbatch(filename_script, env):
 
         # wait return
         process.wait()
+        process.terminate()
     except OSError as ex:
         raise RunError("sbatch error: %s" % str(ex)) from None
 
@@ -90,6 +91,8 @@ def _run_cmd_log(command, filename_log, env):
 
         # wait return
         process.wait()
+        process.stdout.close()
+        process.terminate()
     except OSError as ex:
         raise RunError("command error: %s" % str(ex)) from None
 
