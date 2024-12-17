@@ -14,6 +14,16 @@ function check_release {
   echo "CHECK RELEASE"
   echo "======================================================================"
 
+  # get the version and release message
+  if [[ "$#" -eq 2 ]]
+  then
+    VER=$(echo $1 | awk '{$1=$1;print}')
+    MSG=$(echo $2 | awk '{$1=$1;print}')
+  else
+    echo "error: usage : run_release.sh VER MSG"
+    exit 1
+  fi
+
   # init status
   ret=0
 
@@ -54,9 +64,12 @@ function check_release {
     ret=1
   fi
 
-  # check status
+  # abort in case of failure
   if [[ $ret != 0 ]]
   then
+    echo "======================================================================"
+    echo "RELEASE FAILURE"
+    echo "======================================================================"
     exit $ret
   fi
 }
@@ -69,59 +82,72 @@ function clean_data {
   # clean package
   rm -rf dist
   rm -rf build
-  rm -rf slurmgen.egg-info
+  rm -rf *.egg-info
 
   # clean version file
   rm -rf version.txt
 }
 
-function create_tag {
+function build_check {
   echo "======================================================================"
-  echo "Create tag"
+  echo "BUILD AND CHECK"
+  echo "======================================================================"
+
+  # init status
+  ret=0
+
+  # create a temporary tag
+  git tag -a $VER -m "$MSG" > /dev/null
+
+  # build the release
+  python -m build
+  ret=$(( ret || $? ))
+
+  # check the linter
+  ruff check .
+  ret=$(( ret || $? ))
+
+  # check the format
+  ruff format --check .
+  ret=$(( ret || $? ))
+
+  # remove the temporary tag
+  git tag -d $VER > /dev/null
+
+  # abort in case of failure
+  if [[ $ret != 0 ]]
+  then
+    echo "======================================================================"
+    echo "RELEASE FAILURE"
+    echo "======================================================================"
+    exit $ret
+  fi
+}
+
+function upload_pkg {
+  echo "======================================================================"
+  echo "UPLOAD PACKAGE"
   echo "======================================================================"
 
   # create a tag
   git tag -a $VER -m "$MSG"
 
-  # push the tags
+  # push the tag
   git push origin --tags
-}
-
-function create_release {
-  echo "======================================================================"
-  echo "Create release"
-  echo "======================================================================"
 
   # create a release
   gh release create $VER --title $VER --notes "$MSG"
-}
 
-function upload_package {
-  echo "======================================================================"
-  echo "Upload package"
-  echo "======================================================================"
-
-  # create package
-  python -m build
-
-  # upload to PyPi
+  # upload to PyPI
   twine upload dist/*
 }
 
-# get the version and commit message
-if [ "$#" -eq 2 ]; then
-  VER=$1
-  MSG=$2
-else
-  echo "error : usage : run_release.sh VER MSG"
-  exit 1
-fi
+# parse the arguments
+check_release "$@"
 
 # run the code
-check_release
 clean_data
-create_tag
-create_release
-upload_package
+build_check
+upload_pkg
 
 exit 0
