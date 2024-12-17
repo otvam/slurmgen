@@ -15,7 +15,7 @@ try:
     with filename.open("r") as fid:
         __version__ = fid.read()
 except FileNotFoundError:
-    __version__ = 'x.x.x'
+    __version__ = "x.x.x"
 
 # import the script in the namespace
 from slurmgen.script import run_script as run_script

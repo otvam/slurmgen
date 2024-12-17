@@ -55,13 +55,15 @@ def _get_parser():
 
     # add the template options
     parser.add_argument(
-        "-tf", "--tmpl_file",
+        "-tf",
+        "--tmpl_file",
         help="JSON file with template data",
         action="store",
         dest="tmpl_file",
     )
     parser.add_argument(
-        "-td", "--tmpl_str",
+        "-td",
+        "--tmpl_str",
         help="Key / value with template data",
         action="append",
         dest="tmpl_str",
@@ -70,19 +72,22 @@ def _get_parser():
 
     # add run options
     parser.add_argument(
-        "-l", "--local",
+        "-l",
+        "--local",
         help="Run the job locally for debugging",
         action="store_true",
         dest="local",
     )
     parser.add_argument(
-        "-c", "--cluster",
+        "-c",
+        "--cluster",
         help="Run the job on the Slurm cluster",
         action="store_true",
         dest="cluster",
     )
     parser.add_argument(
-        "-d", "--directory",
+        "-d",
+        "--directory",
         help="Change the working directory",
         action="store",
         dest="directory",
