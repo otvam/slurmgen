@@ -60,3 +60,16 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 slurmgen = ["*.txt"]
+
+[tool.ruff]
+indent-width = 4
+line-length = 160
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "B", "UP"]
+ignore = ["B009", "B010", "UP031"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

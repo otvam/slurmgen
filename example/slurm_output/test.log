@@ -1,10 +1,10 @@
-================================== test - 12/10/24 16:02:17
+================================== test - 12/17/24 00:32:34
 ==================== PARAM
 JOB TAG      : test
 HOST NAME    : l380
 ==================== TIME
-DATE GEN     : 12/10/24 : 16:02:17
-DATE RUN     : 12/10/24 : 16:02:17
+DATE GEN     : 12/17/24 : 00:32:34
+DATE RUN     : 12/17/24 : 00:32:34
 ==================== SLURM
 JOB ID       : LOCAL
 JOB NAME     : LOCAL
@@ -21,4 +21,4 @@ enter script
     ARGUMENT = goodbye world!
     VARWORLD = Welcome to everyone
 exit script
-================================== test - 12/10/24 16:02:17
+================================== test - 12/17/24 00:32:34

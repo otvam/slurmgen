@@ -115,7 +115,7 @@ def _get_template_data(tmpl_file, tmpl_str):
     if tmpl_file is not None:
         # load the template file
         try:
-            with open(tmpl_file, "r") as fid:
+            with open(tmpl_file) as fid:
                 data_raw = fid.read()
         except OSError as ex:
             raise ScriptError("template file not found: %s" % str(ex)) from None
@@ -144,9 +144,9 @@ def _get_template_data(tmpl_file, tmpl_str):
 
     # check template
     for tag, val in tmpl_data.items():
-        if type(tag) != str:
+        if not isinstance(tag, str):
             raise ScriptError("template substitution should be strings")
-        if type(val) != str:
+        if not isinstance(val, str):
             raise ScriptError("template substitution should be strings")
 
     return tmpl_data
@@ -171,7 +171,7 @@ def _get_def_data(def_file, tmpl_data):
 
     # load the JSON data
     try:
-        with open(def_file, "r") as fid:
+        with open(def_file) as fid:
             data_raw = fid.read()
     except OSError as ex:
         raise ScriptError("definition file not found: %s" % str(ex)) from None

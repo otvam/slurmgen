@@ -106,20 +106,20 @@ def _write_summary(fid, tag):
     # write the job name, log file, and script file
     fid.write('echo "==================== PARAM"\n')
     fid.write(f'echo "JOB TAG      : {tag}"\n')
-    fid.write(f'echo "HOST NAME    : $HOSTNAME"\n')
+    fid.write('echo "HOST NAME    : $HOSTNAME"\n')
     fid.write('\n')
 
     # write data about the job submission
     fid.write('echo "==================== TIME"\n')
     fid.write(f'echo "DATE GEN     : `date -u +"%D : %H:%M:%S" -d @{timestamp}`"\n')
-    fid.write(f'echo "DATE RUN     : `date -u +"%D : %H:%M:%S" -d @$(date -u +%s)`"\n')
+    fid.write('echo "DATE RUN     : `date -u +"%D : %H:%M:%S" -d @$(date -u +%s)`"\n')
     fid.write('\n')
 
     # write the job id, job name, and the assigned node names
     fid.write('echo "==================== SLURM"\n')
-    fid.write(f'echo "JOB ID       : $SLURM_JOB_ID"\n')
-    fid.write(f'echo "JOB NAME     : $SLURM_JOB_NAME"\n')
-    fid.write(f'echo "JOB NODE     : $SLURM_JOB_NODELIST"\n')
+    fid.write('echo "JOB ID       : $SLURM_JOB_ID"\n')
+    fid.write('echo "JOB NAME     : $SLURM_JOB_NAME"\n')
+    fid.write('echo "JOB NODE     : $SLURM_JOB_NODELIST"\n')
     fid.write('\n')
 
 
