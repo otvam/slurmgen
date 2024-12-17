@@ -6,7 +6,7 @@
 build-backend = "setuptools.build_meta"
 requires = [
     "setuptools >= 75.5",
-    "setuptools_scm >=8.1",
+    "setuptools_scm >= 8.1",
     "wheel >= 0.45",
 ]
 
@@ -40,13 +40,8 @@ requires-python = ">=3.9"
 dynamic = ["version"]
 
 [project.optional-dependencies]
-dev = [
-    "pip >= 24.3",
-    "build >= 1.2",
-]
-test = [
-    "ruff >= 0.8",
-]
+dev = ["pip >= 24.3", "build >= 1.2"]
+test = ["ruff >= 0.8"]
 
 [project.urls]
 Homepage = "https://github.com/otvam/slurmgen"
