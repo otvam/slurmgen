@@ -18,5 +18,4 @@ except FileNotFoundError:
     __version__ = "x.x.x"
 
 # import the script in the namespace
-from slurmgen.script import run_script as run_script
-from slurmgen.script import run_data as run_data
+from slurmgen.script import *
