@@ -104,11 +104,11 @@ function build_check {
   ret=$(( ret || $? ))
 
   # check the linter
-  ruff check .
+  ruff check --no-cache .
   ret=$(( ret || $? ))
 
   # check the format
-  ruff format --check .
+  ruff format --no-cache --check .
   ret=$(( ret || $? ))
 
   # remove the temporary tag
