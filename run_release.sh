@@ -9,11 +9,7 @@
 set -o nounset
 set -o pipefail
 
-function check_release {
-  echo "======================================================================"
-  echo "CHECK RELEASE"
-  echo "======================================================================"
-
+function parse_arg {
   # get the version and release message
   if [[ "$#" -eq 2 ]]
   then
@@ -23,6 +19,12 @@ function check_release {
     echo "error: usage : run_release.sh VER MSG"
     exit 1
   fi
+}
+
+function check_release {
+  echo "======================================================================"
+  echo "============================== CHECK RELEASE"
+  echo "======================================================================"
 
   # init status
   ret=0
@@ -68,7 +70,7 @@ function check_release {
   if [[ $ret != 0 ]]
   then
     echo "======================================================================"
-    echo "RELEASE FAILURE"
+    echo "============================== RELEASE FAILURE"
     echo "======================================================================"
     exit $ret
   fi
@@ -76,7 +78,7 @@ function check_release {
 
 function clean_data {
   echo "======================================================================"
-  echo "CLEAN DATA"
+  echo "============================== CLEAN DATA"
   echo "======================================================================"
 
   # clean package
@@ -90,7 +92,7 @@ function clean_data {
 
 function build_check {
   echo "======================================================================"
-  echo "BUILD AND CHECK"
+  echo "============================== BUILD AND CHECK"
   echo "======================================================================"
 
   # init status
@@ -118,7 +120,7 @@ function build_check {
   if [[ $ret != 0 ]]
   then
     echo "======================================================================"
-    echo "RELEASE FAILURE"
+    echo "============================== RELEASE FAILURE"
     echo "======================================================================"
     exit $ret
   fi
@@ -126,7 +128,7 @@ function build_check {
 
 function upload_pkg {
   echo "======================================================================"
-  echo "UPLOAD PACKAGE"
+  echo "============================== UPLOAD PACKAGE"
   echo "======================================================================"
 
   # create a tag
@@ -142,12 +144,22 @@ function upload_pkg {
   twine upload dist/*
 }
 
+function ret_collect {
+  echo "======================================================================"
+  echo "============================== RELEASE SUCCESS"
+  echo "======================================================================"
+}
+
 # parse the arguments
-check_release "$@"
+parse_arg "$@"
 
 # run the code
+check_release
 clean_data
 build_check
 upload_pkg
+
+# collect status
+ret_collect
 
 exit 0
