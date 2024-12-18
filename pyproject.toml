@@ -16,7 +16,7 @@ version_scheme = "guess-next-dev"
 
 [project]
 name = "slurmgen"
-description = "SlurmGen - Simple Slurm Manager"
+description = "SlurmGen - Simple Manager for Slurm Jobs"
 license = {text = "BSD-2-Clause"}
 authors = [{name = "Thomas Guillod", email = "guillod@otvam.ch"}]
 maintainers = [{name = "Thomas Guillod", email = "guillod@otvam.ch"}]

@@ -1,4 +1,4 @@
-# SlurmGen - Simple Slurm Manager
+# SlurmGen - Simple Manager for Slurm Jobs
 
 > * **Repository: [github.com/otvam/slurmgen](https://github.com/otvam/slurmgen)**
 > * **PyPi: [pypi.org/project/slurmgen](https://pypi.org/project/slurmgen)**
