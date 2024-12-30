@@ -10,11 +10,11 @@
 # exclude packinging files
 dist/*
 build/*
-slurmgen.egg-info/*
+*.egg-info/*
 
 # exclude version file
-slurmgen/version.txt
+*/version.txt
 
-# exclude the project files
-.idea/*
-.venv/*
+# exclude the IDE folders
+.vscode/
+.idea/
